@@ -35,12 +35,11 @@ class Schema:
     """ class Schema to build a sql string for Schema creation
 
     USAGE:
-            Schema(name="credstuffer")
+            Schema(name="comunioscore")
 
     """
     def __init__(self, name):
-        self.logger = logging.getLogger('ComunioScore')
-        self.logger.info('create class Schema')
+        self.logger = logging.getLogger('credstuffer')
 
         self.name = name
 
@@ -71,7 +70,6 @@ class Table:
     """
     def __init__(self, name, *columns, schema=None):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('create class Table')
 
         self.name = name
         self.schema = schema
@@ -127,7 +125,6 @@ class Column:
     """
     def __init__(self, name, type, not_null=False, prim_key=False, exist_table=False, table_name=None, schema=None):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('create class Column')
 
         self.name = name
         self.type = type
