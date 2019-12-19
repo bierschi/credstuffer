@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from credstuffer import __version__, __author__, __email__, __license__
+from credstuffer import __version__, __author__, __email__, __license__, __title__
 
 with open('requirements.txt') as f:
     required = f.read().splitlines()
@@ -12,7 +12,7 @@ with open("CHANGELOG.rst") as f:
 
 
 setup(
-    name="credstuffer",
+    name=__title__,
     version=__version__,
     description="credentials stuffing",
     long_description=readme + "\n\n" + changelog,
@@ -40,7 +40,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            'credstuffer = '
+            'credstuffer = credstuffer.credstuffer:main'
         ],
     },
     zip_safe=False,
