@@ -16,12 +16,12 @@ sudo python3 setup.py bdist_wheel
 
 install the package with pip
 <pre><code>
-pip3 install CredentialDatabase-1.0.0-py3-none-any.whl
+pip3 install credstuffer-1.0.0-py3-none-any.whl
 </code></pre>
 
 uninstall the package with pip 
 <pre><code>
-pip3 uninstall CredentialDatabase
+pip3 uninstall credstuffer
 </code></pre>
 
 ### Usage and Examples
