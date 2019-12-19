@@ -14,7 +14,7 @@ with open("CHANGELOG.rst") as f:
 setup(
     name=__title__,
     version=__version__,
-    description="credentials stuffing",
+    description="credentials stuffer",
     long_description=readme + "\n\n" + changelog,
     license=__license__,
     author=__author__,

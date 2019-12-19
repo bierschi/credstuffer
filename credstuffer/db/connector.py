@@ -6,6 +6,7 @@ from credstuffer.exceptions import DBConnectorError
 try:
     import psycopg2
     from psycopg2.pool import ThreadedConnectionPool
+    from psycopg2 import Error
     is_psycopg2_importable=True
 except ImportError as ex:
     is_psycopg2_importable=False
@@ -48,7 +49,7 @@ class DBConnector:
             else:
                 print("psycogp2 is not imported")
         except psycopg2.DatabaseError as e:
-            logging.getLogger('ComunioScoreApp').error('Could not connect to ThreadedConnectionPool: {}'.format(e))
+            logging.getLogger('credstuffer').error('Could not connect to ThreadedConnectionPool: {}'.format(e))
 
     @classmethod
     def connect_sqlite(cls, path):

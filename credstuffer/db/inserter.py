@@ -1,6 +1,6 @@
 import logging
-from credstuffer.db.connector import DBConnector
-from credstuffer.exceptions import DBInserterError
+from credstuffer.db.connector import DBConnector, Error
+from credstuffer.exceptions import DBInserterError, DBIntegrityError
 
 
 class DBInserter(DBConnector):
@@ -13,13 +13,11 @@ class DBInserter(DBConnector):
 
     """
     def __init__(self):
-        self.logger = logging.getLogger('ComunioScore')
+        self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class DBInserter')
 
         # init connector base class
         super().__init__()
-
-        pass
 
     def sql(self, sql, autocommit=False):
         """ executes a sql statement
@@ -51,8 +49,12 @@ class DBInserter(DBConnector):
         with self.get_cursor(autocommit=autocommit) as cursor:
             if self.is_sqlite:
                 sql = sql.replace('%s', '?')
+            try:
+                cursor.execute(sql, data)
+            except Error as e:
+                if e.pgcode == '23505':
 
-            cursor.execute(sql, data)
+                    raise DBIntegrityError(e)
 
     def many_rows(self, sql, datas, autocommit=False):
         """ insert many rows into database table
@@ -70,8 +72,11 @@ class DBInserter(DBConnector):
             with self.get_cursor(autocommit=autocommit) as cursor:
                 if self.is_sqlite:
                     sql = sql.replace('%s', '?')
-
-                cursor.executemany(sql, datas)
+                try:
+                    cursor.executemany(sql, datas)
+                except Error as e:
+                    if e.pgcode == '23505':
+                        raise DBIntegrityError(e)
         else:
             raise DBInserterError("'datas' must be type of list")
 

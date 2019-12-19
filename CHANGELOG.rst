@@ -1,1 +1,2 @@
 - 27.10.2019: development start
+- 19.12.2019: Added credstuffer into jenkins ci server

@@ -35,7 +35,7 @@ class Schema:
     """ class Schema to build a sql string for Schema creation
 
     USAGE:
-            Schema(name="comunioscore")
+            Schema(name="credstuffer")
 
     """
     def __init__(self, name):
