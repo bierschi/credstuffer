@@ -1,15 +1,8 @@
 import argparse
-import logging
 from credstuffer.utils.logger import Logger
 from credstuffer.logins.comunio import Comunio
+from credstuffer.stuffing import Stuffing
 
-
-def main2():
-
-    comunio = Comunio()
-    resp = comunio.login('bierschi', 'test12345')
-    print(resp.status_code)
-    print(resp.text)
 
 def main():
 
@@ -32,6 +25,8 @@ def main():
     logger = Logger(name='credstuffer', level='info', log_folder='/var/log/')
     logger.info("start application credstuffer")
 
+    stuffer = Stuffing()
+    stuffer.run()
 
 if __name__ == '__main__':
-    main2()
+    main()

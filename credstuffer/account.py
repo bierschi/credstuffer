@@ -9,6 +9,7 @@ class Account(ABC):
     def __init__(self):
 
         self.session = requests.Session()
+        self.login_request_timeout = 2
         self.headers = {
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'de-DE,en-EN;q=0.9',

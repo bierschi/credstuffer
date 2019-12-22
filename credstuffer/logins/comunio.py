@@ -43,8 +43,8 @@ class Comunio(UserAccount):
                 try:
 
                     self.request_counter += 1
-                    request_login = self.session.post(self.comunio_login_url, headers=self.headers, data=login_form)
-
+                    request_login = self.session.post(self.comunio_login_url, headers=self.headers, data=login_form, timeout=self.login_request_timeout)
+                    self.logger.info("request comunio with username: {} and password: {}".format(username, password))
                 except requests.exceptions.RequestException as e:
                     self.logger.error(e)
                     return None
@@ -61,6 +61,7 @@ class Comunio(UserAccount):
 
         """
         if isinstance(proxy, dict):
+            self.logger.info("set proxy to {}".format(proxy['http']))
             self.session.proxies = proxy
 
         else:
