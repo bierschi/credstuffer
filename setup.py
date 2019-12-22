@@ -40,7 +40,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            'credstuffer = credstuffer.credstuffer:main'
+            'credstuffer = credstuffer.app:main'
         ],
     },
     zip_safe=False,

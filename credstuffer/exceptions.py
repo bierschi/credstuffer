@@ -19,3 +19,12 @@ class DBIntegrityError(Exception):
     """DBIntegrityError"""
     pass
 
+
+class ProxyNotSetError(Exception):
+    """ProxyNotSetError"""
+    pass
+
+
+class ProxyMaxRequestError(Exception):
+    """ProxyMaxRequestError"""
+    pass
