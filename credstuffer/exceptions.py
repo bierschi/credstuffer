@@ -28,3 +28,8 @@ class ProxyNotSetError(Exception):
 class ProxyMaxRequestError(Exception):
     """ProxyMaxRequestError"""
     pass
+
+
+class ProxyBadConnectionError(Exception):
+    """ProxyBadConnectionError"""
+    pass
