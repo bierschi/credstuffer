@@ -20,6 +20,7 @@ class Proxy:
         self.headers = {'User-Agent': 'Mozilla/5.0'}
         self.session = requests.Session()
         self.proxies = self.load_proxies(timeout=self.timeout_ms)
+        self.logger.info("Loaded {} proxies with timeout {}".format(len(self.proxies), self.timeout_ms))
 
     def get(self):
         """ returns a proxy

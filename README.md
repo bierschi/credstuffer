@@ -3,26 +3,16 @@
 
 
 ## Installation
+install [credstuffer](https://github.com/bierschi/credstuffer) with pip
+<pre><code>
+pip3 install credstuffer
+</code></pre>
 
-installation from source
+or from source
 <pre><code>
 sudo python3 setup.py install
 </code></pre>
 
-or create a wheel for installing the package with pip
-<pre><code>
-sudo python3 setup.py bdist_wheel
-</code></pre>
-
-install the package with pip
-<pre><code>
-pip3 install credstuffer-1.0.0-py3-none-any.whl
-</code></pre>
-
-uninstall the package with pip 
-<pre><code>
-pip3 uninstall credstuffer
-</code></pre>
 
 ### Usage and Examples
 

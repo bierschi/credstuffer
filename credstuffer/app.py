@@ -21,11 +21,19 @@ def main():
 
     args = parser.parse_args()
 
+    host = args.host
+    port = args.port
+    username = args.user
+    password = args.password
+    dbname = args.dbname
+    dbparams = {'host': host, 'port': port, 'username': username, 'password': password, 'dbname': dbname}
+
     # set up logger instance
     logger = Logger(name='credstuffer', level='info', log_folder='/var/log/')
     logger.info("start application credstuffer")
 
-    stuffer = Stuffing()
+    stuffer = Stuffing(**dbparams)
+    #stuffer = Stuffing(filepath='/home/christian/projects/CredentialDatabase/Collections/rockyou.txt')
     stuffer.run()
 
 if __name__ == '__main__':
