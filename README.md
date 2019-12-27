@@ -3,6 +3,7 @@
 
 
 ## Installation
+
 install [credstuffer](https://github.com/bierschi/credstuffer) with pip
 <pre><code>
 pip3 install credstuffer
@@ -14,13 +15,22 @@ sudo python3 setup.py install
 </code></pre>
 
 
-### Usage and Examples
+## Usage and Examples
 
-Use the console script `credstuffer`
+Print the available arguments for credstuffer
 <pre><code>
-credstuffer
+credstuffer --help
 </code></pre>
 
+Use it with a credential file of your choice
+<pre><code>
+credstuffer instagram file --path /home/john/credentials.txt
+</code></pre>
+
+Fetch data from a database connection
+<pre><code>
+credstuffer instagram database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres
+</code></pre>
 
 ## Logs
 
