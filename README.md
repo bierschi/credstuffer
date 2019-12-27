@@ -16,6 +16,10 @@ sudo python3 setup.py install
 
 ### Usage and Examples
 
+Use the console script `credstuffer`
+<pre><code>
+credstuffer
+</code></pre>
 
 
 ## Logs
