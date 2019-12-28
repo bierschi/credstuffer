@@ -25,7 +25,7 @@ setup(
     include_package_data=True,
     install_requires=required,
     python_requires=">=3",
-    keywords=["credstuffer", "credentials", "stuffing", "hacking"],
+    keywords=["credstuffer", "credentials", "stuffing", "hacking", "bruteforce"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",

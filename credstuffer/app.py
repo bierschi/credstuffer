@@ -1,7 +1,7 @@
 import argparse
 from credstuffer.utils.logger import Logger
 from credstuffer.stuffing import Stuffing
-
+from credstuffer import __version__
 
 def main():
 
@@ -29,6 +29,8 @@ def main():
     parser_database.add_argument('-p', '--password', type=str, help='Password from the user', required=True)
     parser_database.add_argument('-DB', '--dbname',  type=str, help='Database name', required=True)
 
+    parser.add_argument('-v', '--version', action='version', version=__version__, help='show the current version')
+
     args = parser.parse_args()
 
     # set up logger instance
@@ -37,12 +39,12 @@ def main():
 
     if args.subcommand == 'file':
         if args.path is not None:
-            logger.info("process file")
+            logger.info("process credential file")
             stuffer = Stuffing(filepath=args.path)
             stuffer.run()
         else:
             # currently not supported
-            logger.info("process directory")
+            logger.info("process credential directory")
     else:
         logger.info("process database parameters")
         host = args.host

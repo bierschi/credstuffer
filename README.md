@@ -27,7 +27,7 @@ Use it with a credential file of your choice
 credstuffer instagram file --path /home/john/credentials.txt
 </code></pre>
 
-Fetch data from a database connection
+Or fetch credential data from a database connection
 <pre><code>
 credstuffer instagram database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres
 </code></pre>
