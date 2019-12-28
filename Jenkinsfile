@@ -5,8 +5,6 @@ pipeline {
                      steps {
                          echo 'Build package credstuffer'
                          sh 'pip3 install -r requirements.txt'
-                         //sh 'python3 setup.py bdist_wheel'
-                         //sh 'sudo python3 setup.py install'
                      }
                  }
                  stage('Static Code Metrics') {
@@ -43,9 +41,13 @@ pipeline {
                               archiveArtifacts (allowEmptyArchive: true,
                               artifacts: 'dist/*whl', fingerprint: true)
                         }
+                        success {
+                            echo 'Install package credstuffer'
+                            sh 'sudo python3 setup.py install'
+                        }
                     }
                  }
-                 stage('Deploy To Target Server') {
+                 stage('Deploy/Install To Target Server') {
                     steps {
                         echo 'Deploy credstuffer to target server'
                         sshPublisher(publishers: [sshPublisherDesc(configName: 'christian@server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo pip3 install projects/credstuffer/$BUILD_NUMBER/credstuffer-*.whl', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'credstuffer/$BUILD_NUMBER', remoteDirectorySDF: false, removePrefix: 'dist', sourceFiles: 'dist/*.whl')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
