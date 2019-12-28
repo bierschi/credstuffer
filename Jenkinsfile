@@ -15,7 +15,7 @@ pipeline {
                         echo 'Test Coverage'
 
                         echo 'Style checks with pylint'
-                        sh 'pylint3 --reports=y credstuffer/'
+                        sh 'pylint3 --reports=y credstuffer/ || exit 0'
                     }
 
                  }
