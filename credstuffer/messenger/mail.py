@@ -8,7 +8,7 @@ class Mail:
     """ class Mail to provide sending credentials to specific email adress
 
     USAGE:
-            mail = Mail(smtp_server="smtp.web.de", sender=sender@web.de, receiver=receiver@web.de, debug=False)
+            mail = Mail(smtp_server="smtp.web.de", port=587, sender=sender@web.de, receiver=receiver@web.de, debug=False)
             mail.login(username='', password='')
             mail.send()
     """

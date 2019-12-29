@@ -2,6 +2,33 @@ import argparse
 from credstuffer.utils.logger import Logger
 from credstuffer.stuffing import Stuffing
 from credstuffer import __version__
+from credstuffer.logins import Comunio
+
+
+class Credstuffer:
+
+    def __init__(self, account, nsmtp=None, nport=None, nsender=None, nreceiver=None, npassword=None, filepath=None, **dbparams):
+
+        self.account = account
+        self.smtp = nsmtp
+        self.port = nport
+        self.sender = nsender
+        self.receiver = nreceiver
+        self.password = npassword
+        self.filepath = filepath
+        self.dbparams = dbparams
+
+        # create account instances
+        if self.account == 'comunio':
+            comunio = Comunio(max_requests=20000, SMTP=self.smtp, PORT=self.port, SENDER=self.sender,
+                              RECEIVER=self.receiver, PASSWORD=self.password, notify='mail')
+
+            if self.filepath is not None:
+                stuffer = Stuffing(account=comunio, filepath=self.filepath)
+            else:
+                stuffer = Stuffing(account=comunio, **self.dbparams)
+
+            stuffer.run()
 
 def main():
 
@@ -14,7 +41,7 @@ def main():
 
     # account required
     parser.add_argument('account', choices=['comunio', 'instagram', 'facebook'], help='The account you want to stuffing')
-    subparsers = parser.add_subparsers(dest='subcommand', help='File or database subcommands')
+    subparsers = parser.add_subparsers(dest='subcommand', help='File or Database subcommands')
 
     # parser for file parameters
     parser_file = subparsers.add_parser('file', help='Path to a single file or a directory')
@@ -24,10 +51,17 @@ def main():
     # parser for database parameters
     parser_database = subparsers.add_parser('database', help='Database connection arguments')
     parser_database.add_argument('-H', '--host',     type=str, help='Hostname for the database connection', required=True)
-    parser_database.add_argument('-P', '--port',     type=str, help='Port for the database connection', required=True)
+    parser_database.add_argument('-P', '--port',     type=int, help='Port for the database connection', required=True)
     parser_database.add_argument('-U', '--user',     type=str, help='User for the database connection', required=True)
     parser_database.add_argument('-p', '--password', type=str, help='Password from the user', required=True)
     parser_database.add_argument('-DB', '--dbname',  type=str, help='Database name', required=True)
+
+    parser_notifyer = parser.add_argument_group('Notification', 'Define arguments for Mail or Telegram Notification')
+    parser_notifyer.add_argument('--Nsmtp', type=str, help='SMTP email server')
+    parser_notifyer.add_argument('--Nport', type=int, help='SMTP Port')
+    parser_notifyer.add_argument('--Nsender', type=str, help='email from sender')
+    parser_notifyer.add_argument('--Nreceiver', type=str, help='email from receiver')
+    parser_notifyer.add_argument('--Npassword', type=str, help='password from sender email')
 
     parser.add_argument('-v', '--version', action='version', version=__version__, help='show the current version')
 
@@ -40,8 +74,8 @@ def main():
     if args.subcommand == 'file':
         if args.path is not None:
             logger.info("process credential file")
-            stuffer = Stuffing(filepath=args.path)
-            stuffer.run()
+            credstuffer = Credstuffer(account=args.account, smtp=args.Nsmtp, port=args.Nport, sender=args.Nsender,
+                                      receiver=args.Nreceiver, password=args.Npassword, filepath=args.path)
         else:
             # currently not supported
             logger.info("process credential directory")
@@ -54,8 +88,8 @@ def main():
         dbname = args.dbname
         dbparams = {'host': host, 'port': port, 'username': username, 'password': password, 'dbname': dbname}
 
-        stuffer = Stuffing(**dbparams)
-        stuffer.run()
+        credstuffer = Credstuffer(account=args.account, nsmtp=args.Nsmtp, nport=args.Nport, nsender=args.Nsender,
+                                  nreceiver=args.Nreceiver, npassword=args.Npassword, **dbparams)
 
 
 if __name__ == '__main__':

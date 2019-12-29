@@ -19,9 +19,26 @@ class UserAccount(Account):
         super().__init__()
 
     @abstractmethod
-    def login(self, username, password):
+    def set_usernames(self, usernames):
+        """ abstract method set_usernames
+
+        :param usernames: list of usernames
+        """
+        pass
+
+    @abstractmethod
+    def login(self, password):
         """ abstract method login
 
         :return: None or request Response
+        """
+        pass
+
+    @abstractmethod
+    def notifyer(self, username, password):
+        """ abstract method notifyer
+
+        :param username: string username
+        :param password: string password
         """
         pass

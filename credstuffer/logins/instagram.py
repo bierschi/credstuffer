@@ -9,6 +9,8 @@ class Instagram(UserAccount):
             instagram = Instagram()
 
     """
+    usernames = list()
+
     def __init__(self):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Comunio')
@@ -16,8 +18,14 @@ class Instagram(UserAccount):
         # init base class
         super().__init__()
 
+    def set_usernames(self, usernames):
+        """ sets usernames for instagram account
 
-    def login(self, username, password):
+        :param usernames: list of usernames
+        """
+        self.usernames = usernames
+
+    def login(self, password):
         """
 
         :param username:
@@ -25,6 +33,15 @@ class Instagram(UserAccount):
         :return:
         """
         print("instagram")
+        pass
+
+    def notifyer(self, username, password):
+        """
+
+        :param username:
+        :param password:
+        :return:
+        """
         pass
 
     def set_proxy(self, proxy):

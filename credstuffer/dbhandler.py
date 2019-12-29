@@ -47,6 +47,6 @@ class DBHandler:
         return self.dbfetcher.all(sql=sql)
 
 if __name__ == '__main__':
-
-    db = DBHandler(**dbparams)
-    db.fetch_data("a", "g")
+    pass
+    #db = DBHandler(**dbparams)
+    #db.fetch_data("a", "g")

@@ -20,7 +20,8 @@ class Account(ABC):
         }
         self.proxy_test_url = 'http://www.google.com'
         self.proxy_test_timeout = 2
-        #self.session.max_redirects = 100
+
+        self.file_cracked = 'cracked'
 
     @abstractmethod
     def set_proxy(self, proxy):
@@ -40,7 +41,8 @@ class Account(ABC):
             proxy_test_response = self.session.get(self.proxy_test_url, headers=self.headers, timeout=self.proxy_test_timeout, allow_redirects=False)
             if proxy_test_response.status_code == 200:
                 return True
-        except (requests.exceptions.ProxyError, requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout) as e:
+        except (requests.exceptions.ProxyError, requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout,
+                requests.exceptions.ConnectionError) as e:
             self.logger.error(e)
             return False
 
