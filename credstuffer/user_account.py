@@ -11,12 +11,12 @@ class UserAccount(Account):
             UserAccount
 
     """
-    def __init__(self):
+    def __init__(self, name=None, notify=None, SMTP=None, PORT=None, SENDER=None, RECEIVER=None, PASSWORD=None):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class UserAccount')
 
         # init base class
-        super().__init__()
+        super().__init__(name=name, notify=notify, SMTP=SMTP, PORT=PORT, SENDER=SENDER, RECEIVER=RECEIVER, PASSWORD=PASSWORD)
 
     @abstractmethod
     def set_usernames(self, usernames):
@@ -34,11 +34,3 @@ class UserAccount(Account):
         """
         pass
 
-    @abstractmethod
-    def notifyer(self, username, password):
-        """ abstract method notifyer
-
-        :param username: string username
-        :param password: string password
-        """
-        pass

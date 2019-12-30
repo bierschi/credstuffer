@@ -18,17 +18,22 @@ class Credstuffer:
         self.filepath = filepath
         self.dbparams = dbparams
 
+        self.accounts = list()
         # create account instances
         if self.account == 'comunio':
-            comunio = Comunio(max_requests=20000, SMTP=self.smtp, PORT=self.port, SENDER=self.sender,
+
+            comunio = Comunio(max_requests=500000, SMTP=self.smtp, PORT=self.port, SENDER=self.sender,
                               RECEIVER=self.receiver, PASSWORD=self.password, notify='mail')
 
+            self.accounts.append(comunio)
+
             if self.filepath is not None:
-                stuffer = Stuffing(account=comunio, filepath=self.filepath)
+                stuffer = Stuffing(accounts=self.accounts, filepath=self.filepath)
             else:
-                stuffer = Stuffing(account=comunio, **self.dbparams)
+                stuffer = Stuffing(accounts=self.accounts, **self.dbparams)
 
             stuffer.run()
+
 
 def main():
 
@@ -74,8 +79,9 @@ def main():
     if args.subcommand == 'file':
         if args.path is not None:
             logger.info("process credential file")
-            credstuffer = Credstuffer(account=args.account, smtp=args.Nsmtp, port=args.Nport, sender=args.Nsender,
-                                      receiver=args.Nreceiver, password=args.Npassword, filepath=args.path)
+
+            credstuffer = Credstuffer(account=args.account, nsmtp=args.Nsmtp, nport=args.Nport, nsender=args.Nsender,
+                                      nreceiver=args.Nreceiver, npassword=args.Npassword, filepath=args.path)
         else:
             # currently not supported
             logger.info("process credential directory")

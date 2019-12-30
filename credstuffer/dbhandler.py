@@ -29,11 +29,35 @@ class DBHandler:
 
             # database schema structure
             self.dbstructure = '0123456789abcdefghijklmnopqrstuvwxyz'
-            self.schema_list = list(self.dbstructure)
-            self.schema_list.append('symbols')
+            self.schema_list_default = list(self.dbstructure)
+            self.schema_list_default.append('symbols')
+            self.table_list_default = self.schema_list_default
+
+            self.schema_list = None
+            self.table_list = None
 
         else:
             self.logger.error("no database params provided!")
+
+    def set_iteration_scheme(self, schemas, tables):
+        """
+
+        :param schemas:
+        :param tables
+        :return:
+        """
+        self.schema_list = list(schemas)
+        self.table_list = list(tables)
+
+    def get_iteration_scheme(self):
+        """
+
+        :return:
+        """
+        if (self.schema_list and self.table_list) is not None:
+            return self.schema_list, self.table_list
+        else:
+            return self.schema_list_default, self.table_list_default
 
     def fetch_data(self, schema, table):
         """
@@ -45,6 +69,7 @@ class DBHandler:
         sql = "select * from \"{}\".\"{}\"".format(schema, table)
 
         return self.dbfetcher.all(sql=sql)
+
 
 if __name__ == '__main__':
     pass

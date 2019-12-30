@@ -35,15 +35,6 @@ class Instagram(UserAccount):
         print("instagram")
         pass
 
-    def notifyer(self, username, password):
-        """
-
-        :param username:
-        :param password:
-        :return:
-        """
-        pass
-
     def set_proxy(self, proxy):
         """
 
