@@ -120,7 +120,7 @@ class Stuffing:
         else:
             # init database connection
             dbhandler = DBHandler(**self.dbparams)
-            dbhandler.set_iteration_scheme(schemas='a', tables='abcdefghijklmnopqrstuvwxyz')
+            dbhandler.set_iteration_scheme(schemas='abcdefghijklmnopqrstuvwxyz', tables='abcdefghijklmnopqrstuvwxyz')
             schema_list, table_list = dbhandler.get_iteration_scheme()
 
             # iterate over schemas
