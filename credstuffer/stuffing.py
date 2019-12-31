@@ -143,5 +143,5 @@ class Stuffing:
                                 password = entry[0]
                                 # execute login
                                 self.account_login(account=account, password=password)
-                    break
+
 

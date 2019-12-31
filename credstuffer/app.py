@@ -1,29 +1,40 @@
 import argparse
+import logging
 from credstuffer.utils.logger import Logger
 from credstuffer.stuffing import Stuffing
 from credstuffer import __version__
-from credstuffer.logins import Comunio
+from credstuffer.accounts import Comunio
 
 
 class Credstuffer:
 
     def __init__(self, account, nsmtp=None, nport=None, nsender=None, nreceiver=None, npassword=None, filepath=None, **dbparams):
+        self.logger = logging.getLogger('credstuffer')
+        self.logger.info('create class Credstuffer')
 
         self.account = account
-        self.smtp = nsmtp
-        self.port = nport
-        self.sender = nsender
-        self.receiver = nreceiver
-        self.password = npassword
         self.filepath = filepath
+        self.mailparams = dict()
+
+        if (nsmtp and nport and nsender and nreceiver and npassword) is not None:
+            self.smtp = nsmtp
+            self.port = nport
+            self.sender = nsender
+            self.receiver = nreceiver
+            self.password = npassword
+            self.mailparams.update({'smtp': self.smtp, 'port': self.port, 'sender': self.sender, 'receiver': self.receiver,
+                                    'password': self.password})
+
+        else:
+            self.logger.info("No mail parameters provided")
+
         self.dbparams = dbparams
 
         self.accounts = list()
         # create account instances
         if self.account == 'comunio':
 
-            comunio = Comunio(max_requests=500000, SMTP=self.smtp, PORT=self.port, SENDER=self.sender,
-                              RECEIVER=self.receiver, PASSWORD=self.password, notify='mail')
+            comunio = Comunio(max_requests=500000, notify='mail', **self.mailparams)
 
             self.accounts.append(comunio)
 

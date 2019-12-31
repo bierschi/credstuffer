@@ -22,6 +22,11 @@ class Proxy:
         self.proxies = self.load_proxies(timeout=self.timeout_ms)
         self.logger.info("Loaded {} proxies with timeout of {} ms".format(len(self.proxies), self.timeout_ms))
 
+    def __del__(self):
+        """destructor"""
+
+        self.session.close()
+
     def get(self):
         """ returns a proxy
 
@@ -42,11 +47,11 @@ class Proxy:
         :return: list of proxies as ip:port
         """
         proxyscrape_url = self.__build_proxyscrape_url(timeout=timeout)
-        response = self.request(url=proxyscrape_url)
+        response = self.__request(url=proxyscrape_url)
 
         return list(filter(None, response.content.decode('utf-8').split('\r\n')))
 
-    def request(self, url):
+    def __request(self, url):
         """ requests the proxyscrape url
 
         :return: request response
