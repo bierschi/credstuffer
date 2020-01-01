@@ -86,6 +86,9 @@ class Comunio(UserAccount):
             # self.logger.error(e)
             raise ProxyBadConnectionError("Proxy Bad Connection")
 
+        except requests.exceptions.RequestException as e:
+            raise ProxyBadConnectionError("Proxy Bad Connection")
+
         return request_login
 
     def set_proxy(self, proxy):
