@@ -1,13 +1,18 @@
 import argparse
 import logging
 from credstuffer.utils.logger import Logger
-from credstuffer.stuffing import Stuffing
+from credstuffer.algorithm import Algorithm
 from credstuffer import __version__
 from credstuffer.accounts import Comunio
 
 
 class Credstuffer:
+    """ class Credstuffer
 
+    USAGE:
+            credstuffer = Credstuffer()
+
+    """
     def __init__(self, account, nsmtp=None, nport=None, nsender=None, nreceiver=None, npassword=None, filepath=None, **dbparams):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Credstuffer')
@@ -39,11 +44,11 @@ class Credstuffer:
             self.accounts.append(comunio)
 
             if self.filepath is not None:
-                stuffer = Stuffing(accounts=self.accounts, filepath=self.filepath)
+                algo = Algorithm(accounts=self.accounts, filepath=self.filepath)
             else:
-                stuffer = Stuffing(accounts=self.accounts, **self.dbparams)
+                algo = Algorithm(accounts=self.accounts, **self.dbparams)
 
-            stuffer.run()
+            algo.execute()
 
 
 def main():

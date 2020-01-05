@@ -56,11 +56,13 @@ class UserAccount(Account):
         :param username: string username
         :param password: string password
         """
-
-        with open(self.root_dir + '/' + self.credential_file + '.txt', 'a') as file:
-            self.logger.info("writing credential (username: {}, password: {}) to file {}".format(username, password,
-                                                                                                 self.credential_file))
-            file.write("username: {}, password: {}\n".format(username, password))
+        try:
+            with open(self.root_dir + '/' + self.credential_file + '.txt', 'a') as file:
+                self.logger.info("writing credential (username: {}, password: {}) to file {}".format(username, password,
+                                                                                                     self.credential_file))
+                file.write("username: {}, password: {}\n".format(username, password))
+        except PermissionError as e:
+            self.logger.error("Could not create credential file! Error: {}".format(e))
 
         if self.mail is not None:
             self.mail.set_subject("CREDSTUFFER: Credential Notification!")

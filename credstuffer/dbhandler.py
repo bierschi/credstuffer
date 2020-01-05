@@ -39,32 +39,13 @@ class DBHandler:
         else:
             self.logger.error("no database params provided!")
 
-    def set_iteration_scheme(self, schemas, tables):
-        """
-
-        :param schemas:
-        :param tables
-        :return:
-        """
-        self.schema_list = list(schemas)
-        self.table_list = list(tables)
-
-    def get_iteration_scheme(self):
-        """
-
-        :return:
-        """
-        if (self.schema_list and self.table_list) is not None:
-            return self.schema_list, self.table_list
-        else:
-            return self.schema_list_default, self.table_list_default
-
     def fetch_data(self, schema, table):
-        """
+        """ fetch data from database table 'schema'.'table'
 
-        :param schema:
-        :param table:
-        :return:
+        :param schema: schema name
+        :param table: table name
+
+        :return: data from database table
         """
         sql = "select * from \"{}\".\"{}\"".format(schema, table)
 

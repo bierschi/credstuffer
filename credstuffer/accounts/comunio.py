@@ -61,7 +61,8 @@ class Comunio(UserAccount):
                                          .format(statuscode, user, password, self.session.proxies['http']))
                         if statuscode == 200:
                             self.send_notification(username=user, password=password)
-
+                        if statuscode == 500:
+                            self.logger.error(future.result().text)
             else:
                 # raise Error to renew Proxy
                 self.request_counter = 0
