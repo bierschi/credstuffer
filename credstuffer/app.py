@@ -13,27 +13,24 @@ class Credstuffer:
             credstuffer = Credstuffer()
 
     """
-    def __init__(self, account, nsmtp=None, nport=None, nsender=None, nreceiver=None, npassword=None, filepath=None, **dbparams):
+    def __init__(self, account, filepath=None, **params):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Credstuffer')
 
         self.account = account
         self.filepath = filepath
         self.mailparams = dict()
+        self.dbparams = dict()
 
-        if (nsmtp and nport and nsender and nreceiver and npassword) is not None:
-            self.smtp = nsmtp
-            self.port = nport
-            self.sender = nsender
-            self.receiver = nreceiver
-            self.password = npassword
-            self.mailparams.update({'smtp': self.smtp, 'port': self.port, 'sender': self.sender, 'receiver': self.receiver,
-                                    'password': self.password})
-
+        if ('smtp' and 'port' and 'sender' and 'receiver' and 'password') in params['mail'].keys():
+            self.mailparams.update(params['mail'])
         else:
-            self.logger.info("No mail parameters provided")
+            self.logger.error("No mail parameters provided!")
 
-        self.dbparams = dbparams
+        if ('host' and 'port' and 'username' and 'password' and 'dbname') in params['database'].keys():
+            self.dbparams.update(params['database'])
+        else:
+            self.logger.error("No database parameters provided!")
 
         self.accounts = list()
         # create account instances
@@ -92,12 +89,21 @@ def main():
     logger = Logger(name='credstuffer', level='info', log_folder='/var/log/')
     logger.info("start application credstuffer")
 
+    params = dict()
+    nsmtp = args.Nsmtp
+    nport = args.Nport
+    nsender = args.Nsender
+    nreceiver = args.Nreceiver
+    npassword = args.Npassword
+
+    params.setdefault('mail', {'smtp': nsmtp, 'port': nport, 'sender': nsender, 'receiver': nreceiver,
+                               'password': npassword})
+
     if args.subcommand == 'file':
         if args.path is not None:
             logger.info("process credential file")
 
-            credstuffer = Credstuffer(account=args.account, nsmtp=args.Nsmtp, nport=args.Nport, nsender=args.Nsender,
-                                      nreceiver=args.Nreceiver, npassword=args.Npassword, filepath=args.path)
+            credstuffer = Credstuffer(account=args.account, filepath=args.path, **params)
         else:
             # currently not supported
             logger.info("process credential directory")
@@ -108,10 +114,10 @@ def main():
         username = args.user
         password = args.password
         dbname = args.dbname
-        dbparams = {'host': host, 'port': port, 'username': username, 'password': password, 'dbname': dbname}
+        params.setdefault('database', {'host': host, 'port': port, 'username': username, 'password': password,
+                                       'dbname': dbname})
 
-        credstuffer = Credstuffer(account=args.account, nsmtp=args.Nsmtp, nport=args.Nport, nsender=args.Nsender,
-                                  nreceiver=args.Nreceiver, npassword=args.Npassword, **dbparams)
+        credstuffer = Credstuffer(account=args.account, **params)
 
 
 if __name__ == '__main__':
