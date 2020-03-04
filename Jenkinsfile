@@ -1,7 +1,7 @@
 pipeline {
          agent any
          stages {
-                 stage('Build Package') {
+                 stage('Build Package credstuffer') {
                      steps {
                          echo 'Build package credstuffer'
                          sh 'pip3 install -r requirements.txt'
@@ -55,6 +55,8 @@ pipeline {
                 }
 
                 stage('Deploy to PyPI') {
+                    when { branch "release/*" }
+
                     steps {
                         echo 'Deploy to PyPI'
                     }

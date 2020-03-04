@@ -14,17 +14,18 @@ class Account(ABC):
         self.root_dir = os.path.dirname(os.path.abspath(__file__))
 
         self.session = requests.Session()
-        self.login_request_timeout = 2
+        self.login_request_timeout = 4
         self.headers = {
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'de-DE,en-EN;q=0.9',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/60.0.3112.78 Chrome/60.0.3112.78 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu '
+                          'Chromium/60.0.3112.78 Chrome/60.0.3112.78 Safari/537.36',
             'Accept': 'application/json, text/plain, */*',
         }
         self.proxy_test_url = 'http://www.google.com'
         self.proxy_test_timeout = 2
 
-        self.filename ='cracked_'
+        self.filename = 'cracked_'
 
     def __del__(self):
         """destructor"""
@@ -46,7 +47,8 @@ class Account(ABC):
         """
         try:
             self.session.proxies = proxy
-            proxy_test_response = self.session.get(self.proxy_test_url, headers=self.headers, timeout=self.proxy_test_timeout, allow_redirects=False)
+            proxy_test_response = self.session.get(self.proxy_test_url, headers=self.headers,
+                                                   timeout=self.proxy_test_timeout, allow_redirects=False)
             if proxy_test_response.status_code == 200:
                 return True
         except requests.exceptions.RequestException as e:

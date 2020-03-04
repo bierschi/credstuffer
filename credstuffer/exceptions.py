@@ -33,3 +33,13 @@ class ProxyMaxRequestError(Exception):
 class ProxyBadConnectionError(Exception):
     """ProxyBadConnectionError"""
     pass
+
+
+class MailMessageError(Exception):
+    """MailMessageError"""
+    pass
+
+
+class AccountInstanceError(Exception):
+    """AccountInstanceError"""
+    pass

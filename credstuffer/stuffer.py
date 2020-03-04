@@ -4,7 +4,12 @@ from credstuffer.exceptions import ProxyMaxRequestError, ProxyBadConnectionError
 
 
 class Stuffer:
+    """ Base class Stuffer to provide basic methods for the stuffing algorithm
 
+    USAGE:
+            stuffer = Stuffer(account=account, timeout_ms=50)
+
+    """
     def __init__(self, account, timeout_ms=50):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Stuffer')
