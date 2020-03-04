@@ -1,4 +1,6 @@
 import logging
+from time import sleep
+
 from credstuffer import UserAccount
 from credstuffer.database_stuffer import DatabaseStuffer
 from credstuffer.file_stuffer import FileStuffer
@@ -67,19 +69,31 @@ class Algorithm:
                 # handle email accounts
                 pass
 
-
-    def database(self):
+    def database(self, account):
         """
 
         :return:
         """
-        pass
+        processes = list()
+        for c_schema in self.schema_list:
+            stuffer = DatabaseStuffer(account=account, schema_char=c_schema, **self.dbparams)
+            stuffer.start()
+            processes.append(stuffer)
+            if len(processes) == 6:
+                wait = True
+                while wait:
+                    for proc in processes:
+                        if not proc.is_alive():
+                            self.logger.info("Start new Process")
+                            wait = False
+                    sleep(1)
 
-    def files(self):
+    def files(self, account):
         """
 
         :return:
         """
+        # handle multiple files, start a thread for each given file in file directory
         pass
 
     def map_usernames(self):

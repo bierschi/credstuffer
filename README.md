@@ -1,6 +1,11 @@
 # credstuffer
 [![Build Status](https://travis-ci.org/bierschi/credstuffer.png?branch=master)](https://travis-ci.org/bierschi/credstuffer) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
+**Features** of [credstuffer](https://github.com/bierschi/credstuffer):
+- Stuffing social media accounts like comunio, instagram, facebook
+- Provide easily credentials from files or from a database connection
+- Get Mail or Telegram notifications in success case
+
 
 ## Installation
 

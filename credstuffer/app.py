@@ -1,9 +1,11 @@
 import argparse
 import logging
+
 from credstuffer.utils.logger import Logger
 from credstuffer.algorithm import Algorithm
 from credstuffer import __version__
-from credstuffer.accounts import Comunio
+from credstuffer.accounts import Comunio, Instagram
+from credstuffer.exceptions import AccountInstanceError
 
 
 class Credstuffer:
@@ -22,30 +24,45 @@ class Credstuffer:
         self.mailparams = dict()
         self.dbparams = dict()
 
-        if ('smtp' and 'port' and 'sender' and 'receiver' and 'password') in params['mail'].keys():
-            self.mailparams.update(params['mail'])
+        if 'mail' in params.keys():
+            if ('smtp' and 'port' and 'sender' and 'receiver' and 'password') in params['mail'].keys():
+                self.mailparams.update(params['mail'])
         else:
             self.logger.error("No mail parameters provided!")
 
-        if ('host' and 'port' and 'username' and 'password' and 'dbname') in params['database'].keys():
-            self.dbparams.update(params['database'])
+        if 'database' in params.keys():
+            if ('host' and 'port' and 'username' and 'password' and 'dbname') in params['database'].keys():
+                self.dbparams.update(params['database'])
         else:
             self.logger.error("No database parameters provided!")
 
-        self.accounts = list()
         # create account instances
-        if self.account == 'comunio':
+        self.accounts = list()
+        account_instance = self.create_instance(account=self.account, max_requests=500000, notify='mail', **self.mailparams)
+        self.accounts.append(account_instance)
 
-            comunio = Comunio(max_requests=500000, notify='mail', **self.mailparams)
+        if self.filepath is not None:
+            algo = Algorithm(accounts=self.accounts, filepath=self.filepath)
+        else:
+            algo = Algorithm(accounts=self.accounts, **self.dbparams)
 
-            self.accounts.append(comunio)
+        algo.execute()
 
-            if self.filepath is not None:
-                algo = Algorithm(accounts=self.accounts, filepath=self.filepath)
-            else:
-                algo = Algorithm(accounts=self.accounts, **self.dbparams)
+    def create_instance(self, account, max_requests, notify, **kwargs):
+        """ creates the account instance
 
-            algo.execute()
+        :param account: name of the account
+        :param max_requests: max requests for the proxy
+        :param notify: notify
+        :param kwargs: keyword args
+        :return: instance of the account attribute
+        """
+        if account == 'comunio':
+            return Comunio(max_requests=max_requests, notify=notify, **kwargs)
+        elif account == 'instagram':
+            return Instagram(max_requests=max_requests, notify=notify, **kwargs)
+        else:
+            raise AccountInstanceError("Could not create Account Instance")
 
 
 def main():
@@ -74,6 +91,7 @@ def main():
     parser_database.add_argument('-p', '--password', type=str, help='Password from the user', required=True)
     parser_database.add_argument('-DB', '--dbname',  type=str, help='Database name', required=True)
 
+    # parser for notification parameters
     parser_notifyer = parser.add_argument_group('Notification', 'Define arguments for Mail or Telegram Notification')
     parser_notifyer.add_argument('--Nsmtp', type=str, help='SMTP email server')
     parser_notifyer.add_argument('--Nport', type=int, help='SMTP Port')
@@ -81,6 +99,7 @@ def main():
     parser_notifyer.add_argument('--Nreceiver', type=str, help='email from receiver')
     parser_notifyer.add_argument('--Npassword', type=str, help='password from sender email')
 
+    # TODO Telegram
     parser.add_argument('-v', '--version', action='version', version=__version__, help='show the current version')
 
     args = parser.parse_args()

