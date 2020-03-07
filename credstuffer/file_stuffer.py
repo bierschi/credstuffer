@@ -27,6 +27,7 @@ class FileStuffer(Stuffer, threading.Thread):
         self.set_account_proxy()
 
         # get passwords from file
+        self.logger.info("Open file {} for stuffing".format(self.filepath))
         with open(self.filepath, 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
                 password = line.strip('\n')

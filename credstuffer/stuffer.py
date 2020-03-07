@@ -42,6 +42,8 @@ class Stuffer:
         except (ProxyMaxRequestError, ProxyBadConnectionError) as e:
             self.set_account_proxy()
             self.account_login(password=password)
+        except OSError as ex:
+            self.logger.error("No Internet Connection: {}".format(ex))
 
     def __get_proxy_dict(self):
         """ get proxy dictionary
