@@ -106,3 +106,4 @@ venv.bak/
 #project
 .idea/
 credstuffer/config/
+credstuffer/cracked_*

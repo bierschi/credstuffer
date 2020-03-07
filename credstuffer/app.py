@@ -15,12 +15,14 @@ class Credstuffer:
             credstuffer = Credstuffer()
 
     """
-    def __init__(self, account, filepath=None, **params):
+    def __init__(self, account, usernames, filepath=None, dirpath=None, **params):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Credstuffer')
 
         self.account = account
+        self.usernames = usernames
         self.filepath = filepath
+        self.dirpath = dirpath
         self.mailparams = dict()
         self.dbparams = dict()
 
@@ -41,12 +43,14 @@ class Credstuffer:
         account_instance = self.create_instance(account=self.account, max_requests=500000, notify='mail', **self.mailparams)
         self.accounts.append(account_instance)
 
+        # create the Algorithm
+        algo = Algorithm(accounts=self.accounts, usernames=self.usernames)
         if self.filepath is not None:
-            algo = Algorithm(accounts=self.accounts, filepath=self.filepath)
+            algo.file_stuffing(filepath=self.filepath)
+        elif self.dirpath is not None:
+            algo.directory_stuffing(dirpath=self.dirpath)
         else:
-            algo = Algorithm(accounts=self.accounts, **self.dbparams)
-
-        algo.execute()
+            algo.database_stuffing(**self.dbparams)
 
     def create_instance(self, account, max_requests, notify, **kwargs):
         """ creates the account instance
@@ -99,6 +103,10 @@ def main():
     parser_notifyer.add_argument('--Nreceiver', type=str, help='email from receiver')
     parser_notifyer.add_argument('--Npassword', type=str, help='password from sender email')
 
+    # provide usernames for given account
+    parser_usernames = parser.add_argument_group('Usernames', 'Provided Usernames for the account')
+    parser_usernames.add_argument('--usernames', type=str,  help='Usernames for the given account')
+
     # TODO Telegram
     parser.add_argument('-v', '--version', action='version', version=__version__, help='show the current version')
 
@@ -118,14 +126,20 @@ def main():
     params.setdefault('mail', {'smtp': nsmtp, 'port': nport, 'sender': nsender, 'receiver': nreceiver,
                                'password': npassword})
 
+    if args.usernames is None:
+        print("Please provide usernames for the given account")
+        exit(0)
+    else:
+        account_usernames = args.usernames.split(',')
+
     if args.subcommand == 'file':
         if args.path is not None:
             logger.info("process credential file")
 
-            credstuffer = Credstuffer(account=args.account, filepath=args.path, **params)
+            credstuffer = Credstuffer(account=args.account, usernames=account_usernames, filepath=args.path, **params)
         else:
-            # currently not supported
-            logger.info("process credential directory")
+            credstuffer = Credstuffer(account=args.account, usernames=account_usernames, dirpath=args.dir, **params)
+
     else:
         logger.info("process database parameters")
         host = args.host
@@ -136,7 +150,7 @@ def main():
         params.setdefault('database', {'host': host, 'port': port, 'username': username, 'password': password,
                                        'dbname': dbname})
 
-        credstuffer = Credstuffer(account=args.account, **params)
+        credstuffer = Credstuffer(account=args.account, usernames=account_usernames, **params)
 
 
 if __name__ == '__main__':

