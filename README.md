@@ -5,7 +5,7 @@
 - Stuffing social media accounts like comunio, instagram, facebook
 - Provide easily credentials from directories, files or from a database connection
 - Get Mail or Telegram notifications in success case
-
+- Login requests are only made with proxy
 
 ## Installation
 
