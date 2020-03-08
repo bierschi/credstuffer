@@ -19,7 +19,10 @@ class DirectoryStuffer(Stuffer, threading.Thread):
         Stuffer.__init__(self, account=account)
         threading.Thread.__init__(self)
 
-        self.directory_path = directory_path
+        if os.path.isdir(directory_path):
+            self.directory_path = directory_path
+        else:
+            raise TypeError("Given path {} is not a directory".format(directory_path))
 
     def run(self) -> None:
         """ executes the run thread for account logins """
