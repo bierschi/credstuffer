@@ -2,3 +2,4 @@
 - 19.12.2019: Added credstuffer into jenkins ci server
 - 01.01.2019: Updated version to 1.0.1
 - 05.01.2019: Updated version to 1.0.2
+- 08.03.2020: Updated version to 1.0.3

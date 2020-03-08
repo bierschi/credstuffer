@@ -40,10 +40,10 @@ class Credstuffer:
 
         # create account instances
         self.accounts = list()
-        account_instance = self.create_instance(account=self.account, max_requests=500000, notify='mail', **self.mailparams)
+        account_instance = self.create_instance(account=self.account, max_requests=1000000, notify='mail', **self.mailparams)
         self.accounts.append(account_instance)
 
-        # create the Algorithm
+        # create the stuffing algorithm
         algo = Algorithm(accounts=self.accounts, usernames=self.usernames)
         if self.filepath is not None:
             algo.file_stuffing(filepath=self.filepath)
@@ -72,8 +72,8 @@ class Credstuffer:
 def main():
 
     # parse arguments for credstuffer
-    usage1 = "credstuffer instagram database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres"
-    usage2 = "credstuffer facebook file --path /home/john/credentials.txt"
+    usage1 = "credstuffer instagram --usernames \"John\" database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres"
+    usage2 = "credstuffer facebook --usernames \"John\" file --path /home/john/credentials.txt"
 
     description = "console script for application credstuffer \n\nUsage:\n    {}\n    {}".format(usage1, usage2)
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
