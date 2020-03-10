@@ -16,10 +16,11 @@ class Proxy:
         self.logger.info('create class Proxy')
 
         self.timeout_ms = timeout_ms
+        self.timeout_counter = 1
         self.seed = seed(1)
         self.headers = {'User-Agent': 'Mozilla/5.0'}
         self.session = requests.Session()
-        self.proxies = self.load_proxies(timeout=self.timeout_ms)
+        self.proxies = self.load_proxies(timeout=self.calc_timeout(timeout_ms=self.timeout_ms))
         self.logger.info("Loaded {} proxies with timeout of {} ms".format(len(self.proxies), self.timeout_ms))
 
     def __del__(self):
@@ -38,7 +39,9 @@ class Proxy:
             self.proxies.remove(proxy)
             return proxy
         else:
-            self.proxies = self.load_proxies(self.timeout_ms * 2)
+            timeout_ms = self.calc_timeout(timeout_ms=self.timeout_ms)
+            self.proxies = self.load_proxies(timeout_ms)
+            self.logger.info("Loaded {} proxies with timeout of {} ms".format(len(self.proxies), timeout_ms))
             return self.get()
 
     def load_proxies(self, timeout):
@@ -50,6 +53,17 @@ class Proxy:
         response = self.__request(url=proxyscrape_url)
 
         return list(filter(None, response.content.decode('utf-8').split('\r\n')))
+
+    def calc_timeout(self, timeout_ms):
+        """ raises the timeout to fetch more proxies from webpage
+
+        :param timeout_ms: timeout in ms
+        :return: timeout_ms
+        """
+        timeout_ms = timeout_ms * self.timeout_counter
+        self.timeout_counter += 1
+
+        return timeout_ms
 
     def __request(self, url):
         """ requests the proxyscrape url

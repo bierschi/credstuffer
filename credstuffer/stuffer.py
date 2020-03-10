@@ -1,7 +1,7 @@
 import logging
 from credstuffer.proxy import Proxy
-from credstuffer.exceptions import ProxyMaxRequestError, ProxyBadConnectionError
-
+from credstuffer.exceptions import ProxyMaxRequestError, ProxyBadConnectionError, InternetConnectionError
+from time import sleep
 
 class Stuffer:
     """ Base class Stuffer to provide basic methods for the stuffing algorithm
@@ -39,11 +39,14 @@ class Stuffer:
         """
         try:
             self.account.login(password)
-        except (ProxyMaxRequestError, ProxyBadConnectionError) as e:
+        except (ProxyMaxRequestError, ProxyBadConnectionError) as ex:
+            self.logger.error("ProxyError: {}".format(ex))
             self.set_account_proxy()
             self.account_login(password=password)
-        except OSError as ex:
+        except InternetConnectionError as ex:
             self.logger.error("No Internet Connection: {}".format(ex))
+            sleep(10)
+            self.account_login(password=password)
 
     def __get_proxy_dict(self):
         """ get proxy dictionary

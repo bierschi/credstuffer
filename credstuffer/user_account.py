@@ -9,8 +9,8 @@ class UserAccount(Account):
     """ Base class UserAccount to provide basic methods for accounts with username accounts
 
     USAGE:
-            UserAccount
-
+            useracc = UserAccount(name="Instagram",notify=notify, **kwargs)
+            useracc.send_notification(username="abc", password="test")
     """
     def __init__(self, name=None, notify=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')

