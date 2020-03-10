@@ -1,6 +1,7 @@
 import os
 import requests
 import logging
+from http.client import HTTPConnection
 from abc import ABC, abstractmethod
 
 
@@ -53,6 +54,23 @@ class Account(ABC):
                 return True
         except requests.exceptions.RequestException as e:
             self.logger.error(e)
+            return False
+        except Exception as ex:
+            self.logger.error(ex)
+            return False
+
+    def is_internet_available(self):
+        """ checks if internet is available with a head request to google.com
+
+        :return: True if internet is available, else False
+        """
+
+        conn = HTTPConnection("www.google.com", timeout=2)
+        try:
+            conn.request("HEAD", "/")
+            conn.close()
+            return True
+        except Exception as ex:
             return False
 
     def random_user_agent(self):

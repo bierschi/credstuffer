@@ -35,6 +35,11 @@ class ProxyBadConnectionError(Exception):
     pass
 
 
+class InternetConnectionError(ConnectionError):
+    """InternetConnectionError"""
+    pass
+
+
 class MailMessageError(Exception):
     """MailMessageError"""
     pass
