@@ -31,6 +31,8 @@ class Stuffer:
             proxy = self.__get_proxy_dict()
             if self.account.is_proxy_alive(proxy=proxy):
                 self.account.set_proxy(proxy=proxy)
+                # proxy was renewed therefore the user agent shall be renewed as well
+                self.account.set_random_user_agent()
                 proxy_alive = True
 
     def account_login(self, password):
