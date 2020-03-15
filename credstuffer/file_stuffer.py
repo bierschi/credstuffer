@@ -12,7 +12,7 @@ class FileStuffer(Stuffer, threading.Thread):
     """
     def __init__(self, account, filepath):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('create class FileStuffer')
+        self.logger.info('Create class FileStuffer')
 
         # init base class
         Stuffer.__init__(self, account=account)
@@ -29,8 +29,9 @@ class FileStuffer(Stuffer, threading.Thread):
         # get passwords from file
         self.logger.info("Open file {} for stuffing".format(self.filepath))
         with open(self.filepath, 'r', encoding='utf-8', errors='ignore') as f:
-            for line in f:
+            for lineno, line in enumerate(f):
                 password = line.strip('\n')
                 # execute login
                 self.account_login(password=password)
-
+                if (lineno % 2000) == 0:
+                    self.logger.info("Line number {} with password {}".format(lineno, password))

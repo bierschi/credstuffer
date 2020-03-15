@@ -1,5 +1,7 @@
 import os
+import time
 import logging
+from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from credstuffer import ROOT_DIR
 
@@ -11,7 +13,8 @@ class Logger:
     """
     __instance = None
 
-    def __init__(self, name='credstuffer', level='info', log_folder='/var/log/', log_max_bytes=10000000, backup=5):
+    def __init__(self, account='', name='credstuffer', level='info', log_folder='/var/log/', log_max_bytes=10000000,
+                 backup=5):
 
         if Logger.__instance is not None:
             raise Exception("This class is a singleton!")
@@ -23,6 +26,8 @@ class Logger:
             self.logger = logging.getLogger(name)
         else:
             raise TypeError("'name' must be type of string")
+
+        self.account_name = account
 
         if level == 'info':
             self.level = logging.INFO
@@ -41,16 +46,24 @@ class Logger:
 
         self.local_log = ROOT_DIR + '/logs'
 
+        datetime_obj = datetime.fromtimestamp(time.time())
+        date_str = str(datetime_obj.date())
+        time_str = str(datetime_obj.time()).split('.')[0]
+
         if self.__create_log_folder(log_folder):
 
-            info_log_file_path = log_folder + '/' + self.logger_name + '/info.log'
-            error_log_file_path = log_folder + '/' + self.logger_name + '/error.log'
+            info_log_file_path = log_folder + '/' + self.logger_name + '/info_' + self.account_name + '_' + date_str + \
+                                 '_' + time_str + '_' + '.log'
+            error_log_file_path = log_folder + '/' + self.logger_name + '/error_' + self.account_name + '_' + date_str \
+                                  + '_' + time_str + '_' + '.log'
             self.set_up_handler(log_max_bytes, info_log_file_path, error_log_file_path, backup)
 
         elif self.__create_log_folder(self.local_log):
 
-            info_log_file_path = self.local_log + '/' + self.logger_name + '/info.log'
-            error_log_file_path = self.local_log + '/' + self.logger_name + 'error.log'
+            info_log_file_path = self.local_log + '/' + self.logger_name + '/info_' + self.account_name + '_' + \
+                                 date_str + '_' + time_str + '_' + '.log'
+            error_log_file_path = self.local_log + '/' + self.logger_name + '/error_' + self.account_name + '_' + \
+                                  date_str + '_' + time_str + '_' + '.log'
             self.set_up_handler(log_max_bytes, info_log_file_path, error_log_file_path, backup)
 
         else:

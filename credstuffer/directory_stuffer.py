@@ -13,7 +13,7 @@ class DirectoryStuffer(Stuffer, threading.Thread):
     """
     def __init__(self, account, directory_path):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('create class DirectoryStuffer')
+        self.logger.info('Create class DirectoryStuffer')
 
         # init base class
         Stuffer.__init__(self, account=account)
@@ -39,10 +39,12 @@ class DirectoryStuffer(Stuffer, threading.Thread):
                     self.logger.info("Open file {} for stuffing".format(filepath))
                     # get passwords from file
                     with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-                        for line in f:
+                        for lineno, line in enumerate(f):
                             password = line.strip('\n')
                             # execute login
                             self.account_login(password=password)
+                            if (lineno % 2000) == 0:
+                                self.logger.info("File {} with line number {} and password {}".format(file, lineno, password))
                 else:
-                    self.logger.error("file: {} is not a regular file".format(filepath))
+                    self.logger.error("File: {} is not a regular file".format(filepath))
 

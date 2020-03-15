@@ -48,6 +48,14 @@ class UserAccount(Account):
         pass
 
     @abstractmethod
+    def remove_username(self, username):
+        """ remove username from usernames list
+
+        :param username: username string
+        """
+        pass
+
+    @abstractmethod
     def login(self, password):
         """ abstract method login
 

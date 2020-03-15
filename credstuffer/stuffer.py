@@ -1,7 +1,8 @@
 import logging
+from time import sleep
 from credstuffer.proxy import Proxy
 from credstuffer.exceptions import ProxyMaxRequestError, ProxyBadConnectionError, InternetConnectionError
-from time import sleep
+
 
 class Stuffer:
     """ Base class Stuffer to provide basic methods for the stuffing algorithm
@@ -12,7 +13,7 @@ class Stuffer:
     """
     def __init__(self, account, timeout_ms=50):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('create class Stuffer')
+        self.logger.info('Create class Stuffer')
 
         self.account = account
 
@@ -31,6 +32,8 @@ class Stuffer:
             proxy = self.__get_proxy_dict()
             if self.account.is_proxy_alive(proxy=proxy):
                 self.account.set_proxy(proxy=proxy)
+                # proxy was renewed therefore the user agent shall be renewed as well
+                self.account.set_random_user_agent()
                 proxy_alive = True
 
     def account_login(self, password):
