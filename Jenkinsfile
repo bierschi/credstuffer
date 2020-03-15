@@ -59,7 +59,7 @@ pipeline {
                         expression { "${env.GIT_BRANCH}" =~ "origin/release/" }
                         }
                     steps {
-                        echo 'Deploy to PyPI'
+                        echo 'Deploy to PyPI '
                         sh "python3 -m twine upload dist/*"
                     }
                 }
