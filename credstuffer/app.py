@@ -71,11 +71,16 @@ class Credstuffer:
 
 def main():
 
-    # parse arguments for credstuffer
-    usage1 = "credstuffer instagram --usernames \"John\" database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres"
-    usage2 = "credstuffer facebook --usernames \"John\" file --path /home/john/credentials.txt"
+    # credstuffer usage
+    usage1 = "credstuffer instagram --usernames \"John, Jane\" database --host 192.168.1.2 --port 5432 --user john " \
+             "--password test1234 --dbname postgres"
+    usage2 = "credstuffer facebook --usernames \"John, Jane\" file --path /home/john/credentials.txt"
+    usage3 = "credstuffer comunio --usernames \"John, Jane\" --Nsmtp smtp.web.de --Nport 587 --Nsender john@web.de " \
+             "--Nreceiver jane@web.de --Npassword johnjane file --dir /opt/collections/"
 
-    description = "console script for application credstuffer \n\nUsage:\n    {}\n    {}".format(usage1, usage2)
+    description = "console script for application credstuffer \n\nUsage:\n    {}\n    {}\n    {}".format(usage1, usage2,
+                                                                                                         usage3)
+    # parse arguments for credstuffer
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
 
     # account required
