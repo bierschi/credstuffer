@@ -22,10 +22,10 @@ setup(
     author_email=__email__,
     url="https://github.com/bierschi/credstuffer",
     packages=find_packages(),
-    include_package_data=True,
+    package_data={'credstuffer': ['config/cfg_example.ini']},
     install_requires=required,
-    python_requires=">=3",
     keywords=["credstuffer", "credentials", "stuffing", "hacking", "bruteforce"],
+    python_requires=">=3",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",

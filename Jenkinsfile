@@ -55,12 +55,12 @@ pipeline {
                 }
 
                 stage('Deploy to PyPI') {
-                    when { branch "release/*" }
-
+                    when {
+                        expression { "${env.GIT_BRANCH}" =~ "origin/release/" }
+                        }
                     steps {
                         echo 'Deploy to PyPI'
-                        sh 'echo ${env.PYPI_USERNAME}'
-                        sh 'echo ${env.PYPI_PASSWORD}'
+                        sh "python3 -m twine upload dist/*"
                     }
                 }
 
