@@ -59,6 +59,8 @@ pipeline {
 
                     steps {
                         echo 'Deploy to PyPI'
+                        sh 'echo ${env.PYPI_USERNAME}'
+                        sh 'echo ${env.PYPI_PASSWORD}'
                     }
                 }
 
