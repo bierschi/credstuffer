@@ -118,7 +118,7 @@ def main():
     args = parser.parse_args()
 
     # set up logger instance
-    logger = Logger(name='credstuffer', level='info', log_folder='/var/log/')
+    logger = Logger(account=args.account, name='credstuffer', level='info', log_folder='/var/log/')
     logger.info("start application credstuffer")
 
     params = dict()

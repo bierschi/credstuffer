@@ -1,7 +1,8 @@
 import logging
+from time import sleep
 from credstuffer.proxy import Proxy
 from credstuffer.exceptions import ProxyMaxRequestError, ProxyBadConnectionError, InternetConnectionError
-from time import sleep
+
 
 class Stuffer:
     """ Base class Stuffer to provide basic methods for the stuffing algorithm
@@ -12,7 +13,7 @@ class Stuffer:
     """
     def __init__(self, account, timeout_ms=50):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('create class Stuffer')
+        self.logger.info('Create class Stuffer')
 
         self.account = account
 
