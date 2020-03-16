@@ -1,7 +1,6 @@
 import logging
 from time import sleep
 
-from credstuffer import UserAccount
 from credstuffer.database_stuffer import DatabaseStuffer
 from credstuffer.file_stuffer import FileStuffer
 from credstuffer.directory_stuffer import DirectoryStuffer
@@ -18,7 +17,7 @@ class Algorithm:
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Algorithm')
 
-        self.usernames = [user.strip() for user in usernames]  # strip leading trailing whitespaces
+        self.usernames = [user.strip() for user in usernames]  # strip leading and trailing whitespaces
         self.accounts = accounts
 
         for account in self.accounts:
