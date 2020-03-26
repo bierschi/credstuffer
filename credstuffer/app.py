@@ -15,12 +15,14 @@ class Credstuffer:
             credstuffer = Credstuffer()
 
     """
-    def __init__(self, account, usernames, filepath=None, dirpath=None, **params):
+    def __init__(self, account, usernames, max_requests=1000000, notify='mail', filepath=None, dirpath=None, **params):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Credstuffer')
 
         self.account = account
         self.usernames = usernames
+        self.max_requests = max_requests
+        self.notify = notify
         self.filepath = filepath
         self.dirpath = dirpath
         self.mailparams = dict()
@@ -40,17 +42,9 @@ class Credstuffer:
 
         # create account instances
         self.accounts = list()
-        account_instance = self.create_instance(account=self.account, max_requests=1000000, notify='mail', **self.mailparams)
+        account_instance = self.create_instance(account=self.account, max_requests=self.max_requests, notify=self.notify
+                                                , **self.mailparams)
         self.accounts.append(account_instance)
-
-        # create the stuffing algorithm
-        algo = Algorithm(accounts=self.accounts, usernames=self.usernames)
-        if self.filepath is not None:
-            algo.file_stuffing(filepath=self.filepath)
-        elif self.dirpath is not None:
-            algo.directory_stuffing(dirpath=self.dirpath)
-        else:
-            algo.database_stuffing(**self.dbparams)
 
     def create_instance(self, account, max_requests, notify, **kwargs):
         """ creates the account instance
@@ -67,6 +61,21 @@ class Credstuffer:
             return Instagram(max_requests=max_requests, notify=notify, **kwargs)
         else:
             raise AccountInstanceError("Could not create Account Instance")
+
+    def run(self):
+        """
+
+        :return:
+        """
+
+        # create the stuffing algorithm
+        algo = Algorithm(accounts=self.accounts, usernames=self.usernames)
+        if self.filepath is not None:
+            algo.file_stuffing(filepath=self.filepath)
+        elif self.dirpath is not None:
+            algo.directory_stuffing(dirpath=self.dirpath)
+        else:
+            algo.database_stuffing(**self.dbparams)
 
 
 def main():
@@ -156,6 +165,9 @@ def main():
                                        'dbname': dbname})
 
         credstuffer = Credstuffer(account=args.account, usernames=account_usernames, **params)
+
+    # run the credstuffer application
+    credstuffer.run()
 
 
 if __name__ == '__main__':

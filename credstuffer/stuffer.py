@@ -58,5 +58,7 @@ class Stuffer:
         """
         proxy = self.proxy.get()
         http_proxy = self.http_str + proxy
+        https_proxy = self.https_str + proxy
 
-        return {'http': http_proxy}
+        return {'http': http_proxy,
+                'https': https_proxy}

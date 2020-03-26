@@ -12,6 +12,7 @@ class UserAccount(Account):
             useracc = UserAccount(name="Instagram",notify=notify, **kwargs)
             useracc.send_notification(username="abc", password="test")
     """
+
     def __init__(self, name=None, notify=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class UserAccount')
@@ -39,21 +40,7 @@ class UserAccount(Account):
         else:
             self.logger.info("No credential notification configured")
 
-    @abstractmethod
-    def set_usernames(self, usernames):
-        """ abstract method set_usernames
-
-        :param usernames: list of usernames
-        """
-        pass
-
-    @abstractmethod
-    def remove_username(self, username):
-        """ remove username from usernames list
-
-        :param username: username string
-        """
-        pass
+        self.usernames = list()
 
     @abstractmethod
     def login(self, password):
@@ -62,6 +49,28 @@ class UserAccount(Account):
         :return: None or request Response
         """
         pass
+
+    def set_usernames(self, usernames):
+        """ sets usernames for instagram account
+
+        :param usernames: list of usernames
+        """
+        self.logger.info("set usernames {}".format(usernames))
+        if isinstance(usernames, list):
+            self.usernames.extend(usernames)
+        else:
+            self.usernames.append(usernames)
+
+    def remove_username(self, username):
+        """ removes the given username from the usernames list
+
+        :param username: username string
+        """
+        self.logger.info("Remove username {} from list".format(username))
+        try:
+            self.usernames.remove(username)
+        except ValueError as ex:
+            self.logger.error("Could not remove the username {} from list: {}".format(username, ex))
 
     def send_notification(self, username, password):
         """ saves and sends a notification in success case

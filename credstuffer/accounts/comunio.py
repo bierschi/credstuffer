@@ -3,7 +3,8 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from credstuffer import UserAccount
-from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError, ProxyBadConnectionError, InternetConnectionError
+from credstuffer.exceptions import ProxyNotSetError, ProxyMaxRequestError, ProxyBadConnectionError, \
+    InternetConnectionError
 
 
 class Comunio(UserAccount):
@@ -13,7 +14,6 @@ class Comunio(UserAccount):
             comunio = Comunio(max_requests=10000, notify='mail', **kwargs)
 
     """
-    usernames = list()
 
     def __init__(self, max_requests=10000, notify=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')
@@ -31,27 +31,6 @@ class Comunio(UserAccount):
         self.comunio_login_url = 'https://api.comunio.de/login'
         self.max_requests = max_requests
         self.request_counter = 0
-
-    def set_usernames(self, usernames):
-        """ sets usernames for comunio account
-
-        :param usernames: list of usernames
-        """
-        if isinstance(usernames, list):
-            self.usernames.extend(usernames)
-        else:
-            self.usernames.append(usernames)
-
-    def remove_username(self, username):
-        """ removes the given username from the usernames list
-
-        :param username: username string
-        """
-        self.logger.info("Remove username {} from list".format(username))
-        try:
-            self.usernames.remove(username)
-        except ValueError as ex:
-            self.logger.error("Could not remove the username {} from list: {}".format(username, ex))
 
     def login(self, password):
         """ requests given login data to the account
