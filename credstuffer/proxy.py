@@ -72,7 +72,7 @@ class Proxy:
         """
         return self.session.get(url=url, headers=self.headers)
 
-    def __build_proxyscrape_url(self, proxytype='all', timeout=1000, ssl='all', anonymity='all', country='all'):
+    def __build_proxyscrape_url(self, proxytype='all', timeout=1000, ssl='yes', anonymity='all', country='all'):
         """ defines the proxyscrape url
 
         :param proxytype: type of proxy

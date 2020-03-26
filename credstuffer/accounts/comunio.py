@@ -28,7 +28,8 @@ class Comunio(UserAccount):
             'Content-Type': 'application/x-www-form-urlencoded',
             'Referer': 'http://www.comunio.de/home',
             })
-        self.comunio_login_url = 'https://api.comunio.de/login'
+        self.comunio_login_url = 'http://api.comunio.de/login'
+
         self.max_requests = max_requests
         self.request_counter = 0
 
@@ -95,5 +96,6 @@ class Comunio(UserAccount):
         if isinstance(proxy, dict):
             self.logger.info("set proxy to {}".format(proxy['http']))
             self.session.proxies = proxy
+            #self.session.proxies = {'http': '142.93.40.242:50001'}
         else:
             raise TypeError("proxy must be type of dictionary!")
