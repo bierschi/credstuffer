@@ -18,8 +18,6 @@ class Stuffer:
         self.account = account
 
         self.proxy = Proxy(timeout_ms=timeout_ms)
-        self.http_str = 'http://'
-        self.https_str = 'https://'
 
     def set_account_proxy(self):
         """ sets a proxy for the given account
@@ -57,8 +55,7 @@ class Stuffer:
         :return: dict with 'http' proxy
         """
         proxy = self.proxy.get()
-        http_proxy = self.http_str + proxy
-        https_proxy = self.https_str + proxy
+        http_proxy = proxy
+        https_proxy = proxy
 
-        return {'http': http_proxy,
-                'https': https_proxy}
+        return {'http': http_proxy}

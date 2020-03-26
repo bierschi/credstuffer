@@ -44,6 +44,13 @@ class Account(ABC):
         self.root_dir = os.path.dirname(os.path.abspath(__file__))
 
         self.session = requests.Session()
+        self.proxy_test_session = requests.Session()
+        self.proxy_test_headers = {
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'de-DE,en-EN;q=0.9',
+            'User-Agent': random.choice(user_agent_list),
+            'Accept': 'application/json, text/plain, */*',
+        }
         self.login_request_timeout = 4
         self.headers = {
             'Accept-Encoding': 'gzip, deflate, br',
@@ -75,9 +82,9 @@ class Account(ABC):
         :return: True if alive
         """
         try:
-            self.session.proxies = proxy
-            proxy_test_response = self.session.get(self.proxy_test_url, headers=self.headers,
-                                                   timeout=self.proxy_test_timeout, allow_redirects=False)
+
+            proxy_test_response = self.proxy_test_session.get(self.proxy_test_url, headers=self.proxy_test_headers,
+                                                              timeout=self.proxy_test_timeout, allow_redirects=True)
             if proxy_test_response.status_code == 200:
                 return True
         except requests.exceptions.RequestException as e:
