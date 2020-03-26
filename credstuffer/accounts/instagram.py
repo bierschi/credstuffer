@@ -83,7 +83,7 @@ class Instagram(UserAccount):
                             self.send_notification(username=user, password=password)
                         elif resp_json.get('message') == 'Please wait a few minutes before you try again.':
                             self.logger.info("Renew Proxy!!!")
-
+                            raise ProxyMaxRequestError("Max requests for instagram reached!")
                         elif (resp_json.get('authenticated') is False) and (resp_json.get('user') is False):
                             self.logger.error("User: {} not available!!".format(user))
                         elif (resp_json.get('authenticated') is False) and (resp_json.get('user') is True):
