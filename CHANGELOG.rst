@@ -4,3 +4,4 @@
 - 05.01.2019: Updated version to 1.0.2
 - 08.03.2020: Updated version to 1.0.3
 - 10.03.2020: Updated version to 1.0.4
+- 05.04.2020: Updated version to 1.0.9, Added database support

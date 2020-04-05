@@ -1,5 +1,7 @@
 import logging
+
 from credstuffer.db import DBConnector, DBFetcher, DBInserter
+from credstuffer.exceptions import DBConnectorError
 
 
 class DBHandler:
@@ -20,24 +22,27 @@ class DBHandler:
             self.db_password = dbparams['password']
             self.db_name = dbparams['dbname']
 
-            DBConnector.connect_psycopg(host=self.db_host, port=self.db_port, username=self.db_username,
-                                        password=self.db_password, dbname=self.db_name, minConn=1, maxConn=39)
+            if DBConnector.connect_psycopg(host=self.db_host, port=self.db_port, username=self.db_username,
+                                           password=self.db_password, dbname=self.db_name, minConn=1, maxConn=39):
 
-            # database instances
-            self.dbfetcher = DBFetcher()
-            self.dbinserter = DBInserter()
+                # database instances
+                self.dbfetcher = DBFetcher()
+                self.dbinserter = DBInserter()
 
-            # database schema structure
-            self.dbstructure = '0123456789abcdefghijklmnopqrstuvwxyz'
-            self.schema_list_default = list(self.dbstructure)
-            self.schema_list_default.append('symbols')
-            self.table_list_default = self.schema_list_default
+                # database schema structure
+                self.dbstructure = '0123456789abcdefghijklmnopqrstuvwxyz'
+                self.schema_list_default = list(self.dbstructure)
+                self.schema_list_default.append('symbols')
+                self.table_list_default = self.schema_list_default
 
-            self.schema_list = None
-            self.table_list = None
-
+                self.schema_list = None
+                self.table_list = None
+            else:
+                self.logger.error("DBHandler could not connect to the databases")
+                raise DBConnectorError("DBHandler could not connect to the databases")
         else:
-            self.logger.error("no database params provided!")
+            self.logger.error("DBHandler could not connect to the databases")
+            raise DBConnectorError("DBHandler could not connect to the databases")
 
     def fetch_data(self, schema, table):
         """ fetch data from database table 'schema'.'table'
@@ -51,8 +56,3 @@ class DBHandler:
 
         return self.dbfetcher.all(sql=sql)
 
-
-if __name__ == '__main__':
-    pass
-    #db = DBHandler(**dbparams)
-    #db.fetch_data("a", "g")

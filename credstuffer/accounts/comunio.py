@@ -57,7 +57,7 @@ class Comunio(UserAccount):
 
                         if statuscode == 200:
                             self.send_notification(username=user, password=password)
-                            self.remove_username(username=user)
+                            # self.remove_username(username=user)  # temporary removed
                         if statuscode == 500:
                             self.logger.error(future.result().text)
             else:

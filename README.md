@@ -9,7 +9,7 @@
 
 ## Installation
 
-install [credstuffer](https://github.com/bierschi/credstuffer) with pip
+install [credstuffer](https://pypi.org/project/credstuffer/) with pip
 <pre><code>
 pip3 install credstuffer
 </code></pre>
@@ -39,7 +39,7 @@ credstuffer instagram --usernames "John, Jane" file --dir /home/john/credential_
 
 Or fetch credential data from a database connection
 <pre><code>
-credstuffer instagram --usernames "John, Jane" database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres
+credstuffer instagram --usernames "John, Jane" database --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname postgres --schemas a --tables abc
 </code></pre>
 
 Pass Mail Server params to get a notification in success case

@@ -15,7 +15,8 @@ class Credstuffer:
             credstuffer = Credstuffer()
 
     """
-    def __init__(self, account, usernames, max_requests=1000000, notify='mail', filepath=None, dirpath=None, **params):
+    def __init__(self, account, usernames, max_requests=1000000, notify='mail', filepath=None, dirpath=None,
+                 schemas=None, tables=None, **params):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Credstuffer')
 
@@ -27,6 +28,8 @@ class Credstuffer:
         self.dirpath = dirpath
         self.mailparams = dict()
         self.dbparams = dict()
+        self.schemas = schemas
+        self.tables = tables
 
         if 'mail' in params.keys():
             if ('smtp' and 'port' and 'sender' and 'receiver' and 'password') in params['mail'].keys():
@@ -75,7 +78,7 @@ class Credstuffer:
         elif self.dirpath is not None:
             algo.directory_stuffing(dirpath=self.dirpath)
         else:
-            algo.database_stuffing(**self.dbparams)
+            algo.database_stuffing(schemas=self.schemas, tables=self.tables, **self.dbparams)
 
 
 def main():
@@ -108,6 +111,8 @@ def main():
     parser_database.add_argument('-U', '--user',     type=str, help='User for the database connection', required=True)
     parser_database.add_argument('-p', '--password', type=str, help='Password from the user', required=True)
     parser_database.add_argument('-DB', '--dbname',  type=str, help='Database name', required=True)
+    parser_database.add_argument('-s', '--schemas',  type=str, help='Schemas in database name')
+    parser_database.add_argument('-t', '--tables',   type=str, help='Tables in database schema')
 
     # parser for notification parameters
     parser_notifyer = parser.add_argument_group('Notification', 'Define arguments for Mail or Telegram Notification')
@@ -164,7 +169,11 @@ def main():
         params.setdefault('database', {'host': host, 'port': port, 'username': username, 'password': password,
                                        'dbname': dbname})
 
-        credstuffer = Credstuffer(account=args.account, usernames=account_usernames, **params)
+        schemas = args.schemas
+        tables = args.tables
+
+        credstuffer = Credstuffer(account=args.account, usernames=account_usernames, schemas=schemas, tables=tables,
+                                  **params)
 
     # run the credstuffer application
     credstuffer.run()

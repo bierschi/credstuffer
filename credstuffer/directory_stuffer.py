@@ -43,7 +43,7 @@ class DirectoryStuffer(Stuffer, threading.Thread):
                             password = line.strip('\n')
                             # execute login
                             self.account_login(password=password)
-                            if (lineno % 2000) == 0:
+                            if (lineno % 1000) == 0:
                                 self.logger.info("File {} with line number {} and password {}".format(file, lineno, password))
                 else:
                     self.logger.error("File: {} is not a regular file".format(filepath))

