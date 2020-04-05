@@ -1,5 +1,4 @@
 import logging
-from time import sleep
 
 from credstuffer.database_stuffer import DatabaseStuffer
 from credstuffer.file_stuffer import FileStuffer
@@ -23,25 +22,15 @@ class Algorithm:
         for account in self.accounts:
             account.set_usernames(usernames=self.usernames)
 
-        self.schema_list = list('abcdefghijklmnopqrstuvwxyz')
-
-    def database_stuffing(self, **dbparams):
+    def database_stuffing(self, schemas, tables, **dbparams):
         """ creates the DatabaseStuffer instance and starts the run thread
 
         """
-        processes = list()
-        for c_schema in self.schema_list:
-            stuffer = DatabaseStuffer(account=self.accounts, schema_char=c_schema, **dbparams)
+        if all(el is not None for el in [schemas, tables]):
+            stuffer = DatabaseStuffer(account=self.accounts[0], schemas=schemas, tables=tables, **dbparams)
             stuffer.start()
-            processes.append(stuffer)
-            if len(processes) == 6:
-                wait = True
-                while wait:
-                    for proc in processes:
-                        if not proc.is_alive():
-                            self.logger.info("Start new Process")
-                            wait = False
-                    sleep(1)
+        else:
+            self.logger.error("Argument schemas or tables is None, can not start DatabaseStuffer")
 
     def file_stuffing(self, filepath):
         """ creates the FileStuffer instance and starts the run thread
