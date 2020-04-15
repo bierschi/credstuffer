@@ -1,5 +1,6 @@
 import logging
 from abc import abstractmethod
+from time import sleep
 
 from credstuffer import Account
 from credstuffer.notification import Mail, Telegram
@@ -94,3 +95,4 @@ class UserAccount(Account):
             self.mail.set_body(mail_content)
             self.logger.info("send credential mail: {}".format(mail_content))
             self.mail.send(username=self.sender, password=self.password, receiver=self.receiver)
+            sleep(5)
