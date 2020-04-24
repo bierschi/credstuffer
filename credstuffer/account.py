@@ -87,6 +87,8 @@ class Account(ABC):
                                                               timeout=self.proxy_test_timeout, allow_redirects=True)
             if proxy_test_response.status_code == 200:
                 return True
+            else:
+                return False
         except requests.exceptions.RequestException as e:
             self.logger.error(e)
             return False

@@ -87,6 +87,12 @@ class Comunio(UserAccount):
             else:
                 raise InternetConnectionError("InternetConnectionError: {}".format(ex))
 
+        except Exception as ex:
+            if self.is_internet_available():
+                raise ProxyBadConnectionError("Proxy Bad Connection: Exception: {}".format(ex))
+            else:
+                raise InternetConnectionError("InternetConnectionError: {}".format(ex))
+
         return request_login
 
     def set_proxy(self, proxy):
