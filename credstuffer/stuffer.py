@@ -29,10 +29,13 @@ class Stuffer:
         while not proxy_alive:
             proxy = self.__get_proxy_dict()
             if self.account.is_proxy_alive(proxy=proxy):
-                self.account.set_proxy(proxy=proxy)
-                # proxy was renewed therefore the user agent shall be renewed as well
-                self.account.set_random_user_agent()
-                proxy_alive = True
+                try:
+                    self.account.set_proxy(proxy=proxy)
+                    # proxy was renewed therefore the user agent shall be renewed as well
+                    self.account.set_random_user_agent()
+                    proxy_alive = True
+                except TypeError as ex:
+                    self.logger.error(ex)
 
     def account_login(self, password):
         """ executes the account login with given password
@@ -47,6 +50,10 @@ class Stuffer:
         except InternetConnectionError as ex:
             self.logger.error("No Internet Connection: {}".format(ex))
             sleep(10)
+            self.account_login(password=password)
+        except Exception as ex:
+            self.logger.error("FATAL ERROR occured: {}".format(ex))
+            self.set_account_proxy()
             self.account_login(password=password)
 
     def __get_proxy_dict(self):
