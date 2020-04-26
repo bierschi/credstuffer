@@ -1,7 +1,8 @@
 import logging
 from time import sleep
 from credstuffer.proxy import Proxy
-from credstuffer.exceptions import ProxyMaxRequestError, ProxyBadConnectionError, InternetConnectionError
+from credstuffer.exceptions import ProxyMaxRequestError, ProxyNotSetError, ProxyBadConnectionError, \
+    InternetConnectionError
 
 
 class Stuffer:
@@ -43,7 +44,7 @@ class Stuffer:
         """
         try:
             self.account.login(password)
-        except (ProxyMaxRequestError, ProxyBadConnectionError) as ex:
+        except (ProxyMaxRequestError, ProxyBadConnectionError, ProxyNotSetError) as ex:
             self.logger.error("ProxyError: {}".format(ex))
             self.set_account_proxy()
             self.account_login(password=password)

