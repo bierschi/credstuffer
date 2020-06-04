@@ -18,7 +18,7 @@ class Comunio(UserAccount):
 
     def __init__(self, max_requests=10000, notify=None, token=None, **kwargs):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('create class Comunio')
+        self.logger.info('Create class Comunio')
         self.name = 'Comunio'
 
         # init base class
