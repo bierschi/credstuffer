@@ -8,3 +8,4 @@
 - 25.04.2020: Updated version to 1.0.10, Added multiple try except statements
 - 26.04.2020: Updated version to 1.0.11, Added telegram notification message
 - 04.06.2020: Updated version to 1.0.12, Updated database actions
+- 11.08.2020: Updated version to 1.0.13, Renew proxy if statuscode unequal 400

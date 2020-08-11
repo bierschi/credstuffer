@@ -13,6 +13,12 @@ class Tor:
 
     USAGE:
             tor = Tor()
+            tor.launch()
+            session_tor = requests.Session()
+            session_tor.proxies['http'] = 'socks5h://localhost:9050'
+            session_tor.proxies['https'] = 'socks5h://localhost:9050'
+            cur_ip = session_tor.get(url='http://httpbin.org/ip')
+            tor.trigger_new_ip()
 
     """
     def __init__(self, socks_port=9050, control_port=9051):
@@ -85,25 +91,5 @@ class Tor:
             self.logger.info("[%05d] Tor process executed successfully" % self.socks_port)
             print("[%05d] Tor process executed successfully" % self.socks_port)
 
-
-if __name__ == '__main__':
-    import requests
-    from time import sleep
-    session_n = requests.Session()
-    r = session_n.get(url='http://httpbin.org/ip')
-    print(r.text)
-    tor = Tor()
-    tor.launch()
-    sleep(5)
-
-    for i in range(0, 2):
-        session_t = requests.Session()
-        session_t.proxies['http'] = 'socks5h://localhost:9050'
-        session_t.proxies['https'] = 'socks5h://localhost:9050'
-        r2 = session_t.get(url='http://httpbin.org/ip')
-        print(r2.json())
-        tor.trigger_new_ip()
-        #tor.renew_ip(ip=resp['origin'])
-        sleep(15)
 
 

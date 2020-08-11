@@ -58,15 +58,16 @@ class Comunio(UserAccount):
 
                         if statuscode == 200:
                             self.is_credentials_correct(user=user, password=password)
-                        elif statuscode == 500:
-                            self.logger.error(future.result().text)
+                        elif statuscode != 400:
+                            raise ProxyNotSetError("Wrong response code {}. Renew Proxy!".format(statuscode))
+
             else:
                 # raise Error to renew Proxy
                 self.request_counter = 0
-                self.logger.error("Max number of proxy requests reached!. Renew Proxy")
+                self.logger.error("Max number of proxy requests reached!. Renew Proxy!")
                 raise ProxyMaxRequestError("Max number of proxy requests reached!")
         else:
-            raise ProxyNotSetError("No Proxy was set!")
+            raise ProxyNotSetError("No Proxy was set! Renew Proxy!")
 
     def __request_login(self, username, password):
         """ request login with an session object
@@ -83,15 +84,15 @@ class Comunio(UserAccount):
 
         except requests.exceptions.RequestException as ex:
             if self.is_internet_available():
-                raise ProxyBadConnectionError("Proxy Bad Connection: Exception: {}".format(ex))
+                raise ProxyBadConnectionError("RequestException with Bad Proxy Connection: {}".format(ex))
             else:
-                raise InternetConnectionError("InternetConnectionError: {}".format(ex))
+                raise InternetConnectionError("RequestException with InternetConnectionError: {}".format(ex))
 
         except Exception as ex:
             if self.is_internet_available():
-                raise ProxyBadConnectionError("Proxy Bad Connection: Exception: {}".format(ex))
+                raise ProxyBadConnectionError("Exception with Bad Proxy Connection: {}".format(ex))
             else:
-                raise InternetConnectionError("InternetConnectionError: {}".format(ex))
+                raise InternetConnectionError("Exception with InternetConnectionError: {}".format(ex))
 
         return request_login
 
@@ -102,7 +103,6 @@ class Comunio(UserAccount):
         if isinstance(proxy, dict):
             self.logger.info("set proxy to {}".format(proxy['http']))
             self.session.proxies = proxy
-            #self.session.proxies = {'http': '142.93.40.242:50001'}
         else:
             raise TypeError("proxy must be type of dictionary!")
 
