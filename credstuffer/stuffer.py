@@ -45,15 +45,15 @@ class Stuffer:
         try:
             self.account.login(password)
         except (ProxyMaxRequestError, ProxyBadConnectionError, ProxyNotSetError) as ex:
-            self.logger.error("ProxyError: {}".format(ex))
+            self.logger.error("{}".format(ex))
             self.set_account_proxy()
             self.account_login(password=password)
         except InternetConnectionError as ex:
-            self.logger.error("No Internet Connection: {}".format(ex))
+            self.logger.error("{}".format(ex))
             sleep(10)
             self.account_login(password=password)
         except Exception as ex:
-            self.logger.error("FATAL ERROR occured: {}".format(ex))
+            self.logger.error("FATAL ERROR: {}".format(ex))
             self.set_account_proxy()
             self.account_login(password=password)
 
