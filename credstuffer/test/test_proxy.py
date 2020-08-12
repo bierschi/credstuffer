@@ -1,5 +1,5 @@
 import unittest
-from credstuffer import Proxy
+from credstuffer.proxy import ProxyProvider
 
 
 class TestProxy(unittest.TestCase):
@@ -7,7 +7,7 @@ class TestProxy(unittest.TestCase):
     def setUp(self) -> None:
 
         # set up Proxy instance
-        self.proxy = Proxy(timeout_ms=50)
+        self.proxy = ProxyProvider(timeout_ms=50)
 
     def test_get(self):
 
@@ -17,7 +17,7 @@ class TestProxy(unittest.TestCase):
 
     def test_load_proxies(self):
 
-        proxy_list = self.proxy.load_proxies(timeout=50)
+        proxy_list = self.proxy.load_proxyscrape_proxies(timeout=50)
 
         self.assertIsInstance(proxy_list, list, msg="proxy list must be type of list")
         for proxy in proxy_list:
