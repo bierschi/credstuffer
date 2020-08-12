@@ -3,3 +3,4 @@ PySocks>=1.7.1
 psycopg2>=2.8.3
 python-telegram-bot>=12.1.1
 stem>=1.7.1
+beautifulsoup4>=4.8.0
