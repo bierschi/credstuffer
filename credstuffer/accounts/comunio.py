@@ -54,11 +54,11 @@ class Comunio(UserAccount):
 
                         if (self.request_counter % len(self.usernames)) == 0:
                             self.logger.info("response code: {} from comunio with username: {}, password: {}, proxy: {}"
-                                         .format(statuscode, user, password, self.session.proxies['http']))
+                                             .format(statuscode, user, password, self.session.proxies['http']))
 
                         if statuscode == 200:
                             self.is_credentials_correct(user=user, password=password)
-                        elif statuscode != 400:
+                        elif (statuscode != 400) and (statuscode != 503):
                             raise ProxyNotSetError("Wrong response code {}. Renew Proxy!".format(statuscode))
 
             else:

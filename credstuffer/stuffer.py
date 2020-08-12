@@ -1,6 +1,6 @@
 import logging
 from time import sleep
-from credstuffer.proxy import Proxy
+from credstuffer.proxy import ProxyProvider
 from credstuffer.exceptions import ProxyMaxRequestError, ProxyNotSetError, ProxyBadConnectionError, \
     InternetConnectionError
 
@@ -14,16 +14,15 @@ class Stuffer:
     """
     def __init__(self, account, timeout_ms=50):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('Create class Stuffer')
+        self.logger.info('create class Stuffer')
 
         self.account = account
 
-        self.proxy = Proxy(timeout_ms=timeout_ms)
+        self.proxy = ProxyProvider(timeout_ms=timeout_ms)
 
     def set_account_proxy(self):
         """ sets a proxy for the given account
 
-        :param account: account instance
         """
 
         proxy_alive = False
@@ -37,6 +36,8 @@ class Stuffer:
                     proxy_alive = True
                 except TypeError as ex:
                     self.logger.error(ex)
+            else:
+                self.logger.error("Proxy {} is dead!".format(proxy['http']))
 
     def account_login(self, password):
         """ executes the account login with given password

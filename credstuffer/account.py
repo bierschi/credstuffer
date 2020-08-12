@@ -51,15 +51,17 @@ class Account(ABC):
             'User-Agent': random.choice(user_agent_list),
             'Accept': 'application/json, text/plain, */*',
         }
-        self.login_request_timeout = 4
+
         self.headers = {
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'de-DE,en-EN;q=0.9',
             'User-Agent': random.choice(user_agent_list),
             'Accept': 'application/json, text/plain, */*',
         }
+
         self.proxy_test_url = 'http://www.google.com'
-        self.proxy_test_timeout = 2
+        self.proxy_test_timeout = 2  # seconds
+        self.login_request_timeout = 4  # seconds
 
         self.filename = 'cracked_'
 
@@ -82,7 +84,7 @@ class Account(ABC):
         :return: True if alive
         """
         try:
-
+            self.proxy_test_session.proxies = proxy
             proxy_test_response = self.proxy_test_session.get(self.proxy_test_url, headers=self.proxy_test_headers,
                                                               timeout=self.proxy_test_timeout, allow_redirects=True)
             if proxy_test_response.status_code == 200:

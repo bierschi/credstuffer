@@ -2,25 +2,28 @@ import logging
 import requests
 from random import choice, seed
 
+from credstuffer.proxy import ProxyGrabber
 
-class Proxy:
-    """ class Proxy to provide multiple proxies to request the accounts
+
+class ProxyProvider:
+    """ class ProxyProvider to provide multiple proxies to request the accounts
 
     USAGE:
-            proxy = Proxy(timeout_ms=50)
+            proxy = ProxyProvider(timeout_ms=50)
             proxy.get()
 
     """
     def __init__(self, timeout_ms=50):
         self.logger = logging.getLogger('credstuffer')
-        self.logger.info('create class Proxy')
+        self.logger.info('create class ProxyProvider')
 
         self.timeout_ms = timeout_ms
         self.timeout_counter = 1
         self.seed = seed(1)
         self.headers = {'User-Agent': 'Mozilla/5.0'}
         self.session = requests.Session()
-        self.proxies = self.load_proxies(timeout=self.calc_timeout(timeout_ms=self.timeout_ms))
+
+        self.proxies = self.load_proxyscrape_proxies(timeout=self.calc_timeout(timeout_ms=self.timeout_ms))
         self.logger.info("Loaded {} proxies with timeout of {} ms".format(len(self.proxies), self.timeout_ms))
 
     def __del__(self):
@@ -40,11 +43,33 @@ class Proxy:
             return proxy
         else:
             timeout_ms = self.calc_timeout(timeout_ms=self.timeout_ms)
-            self.proxies = self.load_proxies(timeout_ms)
+            self.proxies = self.load_proxyscrape_proxies(timeout_ms)
             self.logger.info("Loaded {} proxies with timeout of {} ms".format(len(self.proxies), timeout_ms))
-            return self.get()
 
-    def load_proxies(self, timeout):
+            proxy = choice(self.proxies)
+            self.proxies.remove(proxy)
+            return proxy
+
+    def load_all_proxies(self, timeout):
+        """ loads all proxies with given timeout
+
+        :return: list of proxies as ip:port
+        """
+
+        grabber = ProxyGrabber(timeout=timeout)
+        proxy_dict = grabber.collect_proxies()
+
+        proxy_list = list()
+        if 'http' in proxy_dict:
+            proxy_list.extend(proxy_dict['http'])
+        if 'socks4' in proxy_dict:
+            proxy_list.extend(proxy_dict['socks4'])
+        if 'socks5' in proxy_dict:
+            proxy_list.extend(proxy_dict['socks5'])
+
+        return proxy_list
+
+    def load_proxyscrape_proxies(self, timeout):
         """ loads proxies with given timeout from proxyscrape
 
         :return: list of proxies as ip:port
@@ -62,6 +87,8 @@ class Proxy:
         """
         timeout_ms = timeout_ms * self.timeout_counter
         self.timeout_counter += 1
+        if self.timeout_counter == 11:
+            self.timeout_counter = 1
 
         return timeout_ms
 
@@ -106,3 +133,6 @@ class Proxy:
 
         return url
 
+if __name__ == '__main__':
+    proxy = ProxyProvider()
+    print(proxy.get())
