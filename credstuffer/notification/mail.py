@@ -54,6 +54,12 @@ class Mail:
             self.logger.error("Server disconnected, connecting again: {}".format(ex))
             self.connect(smtp_server=self.smtp_server, port=self.port)
             return self.login(username=username, password=password)
+        except smtplib.SMTPAuthenticationError as ex:
+            self.logger.error("Given username and password are wrong! {}".format(ex))
+            return False
+        except Exception as ex:
+            self.logger.error(ex)
+            return False
         return ret[0] == 235  # authentication was successful
 
     def quit(self):
@@ -105,6 +111,8 @@ class Mail:
                     self.logger.error("Authentication to Mail Server failed!")
             except (smtplib.SMTPRecipientsRefused, smtplib.SMTPSenderRefused) as ex:
                 self.logger.error("Failed to send the mail: {}".format(ex))
+            except Exception as ex:
+                self.logger.error(ex)
             finally:
                 self.quit()
 

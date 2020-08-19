@@ -10,3 +10,4 @@
 - 04.06.2020: Updated version to 1.0.12, Updated database actions
 - 11.08.2020: Updated version to 1.0.13, Renew proxy if statuscode unequal 400
 - 12.08.2020: Updated version to 1.0.14, Updated proxy handling
+- 20.08.2020: Updated version to 1.0.15, Updated mail exception handling
