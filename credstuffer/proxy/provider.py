@@ -1,8 +1,10 @@
 import logging
 import requests
 from random import choice, seed
+from time import sleep
 
 from credstuffer.proxy import ProxyGrabber
+from credstuffer.exceptions import InternetConnectionError
 
 
 class ProxyProvider:
@@ -75,9 +77,13 @@ class ProxyProvider:
         :return: list of proxies as ip:port
         """
         proxyscrape_url = self.__build_proxyscrape_url(timeout=timeout)
-        response = self.__request(url=proxyscrape_url)
-
-        return list(filter(None, response.content.decode('utf-8').split('\r\n')))
+        try:
+            response = self.__request(url=proxyscrape_url)
+            return list(filter(None, response.content.decode('utf-8').split('\r\n')))
+        except InternetConnectionError as ex:
+            self.logger.error(ex)
+            sleep(30)
+            return self.load_proxyscrape_proxies(timeout=timeout)
 
     def calc_timeout(self, timeout_ms):
         """ raises the timeout to fetch more proxies from webpage
@@ -97,7 +103,14 @@ class ProxyProvider:
 
         :return: request response
         """
-        return self.session.get(url=url, headers=self.headers)
+        try:
+            return self.session.get(url=url, headers=self.headers)
+        except requests.exceptions.RequestException as ex:
+            self.logger.error(ex)
+            raise InternetConnectionError("No Internet Connection available!")
+        except Exception as ex:
+            self.logger.error("FATAL Error: ".format(ex))
+            raise InternetConnectionError("FATAL Error: ".format(ex))
 
     def __build_proxyscrape_url(self, proxytype='all', timeout=1000, ssl='yes', anonymity='all', country='all'):
         """ defines the proxyscrape url
@@ -133,6 +146,3 @@ class ProxyProvider:
 
         return url
 
-if __name__ == '__main__':
-    proxy = ProxyProvider()
-    print(proxy.get())
