@@ -1,5 +1,7 @@
 # credstuffer
-[![Build Status](https://travis-ci.org/bierschi/credstuffer.png?branch=master)](https://travis-ci.org/bierschi/credstuffer) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://jenkins.bierschi.com/buildStatus/icon?job=credstuffer)](https://jenkins.bierschi.com/job/credstuffer/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/bierschi/credstuffer/blob/master/LICENSE)
+
 
 **Features** of [credstuffer](https://github.com/bierschi/credstuffer):
 - Stuffing social media accounts like comunio, instagram, facebook
