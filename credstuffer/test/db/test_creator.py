@@ -9,7 +9,7 @@ class TestDBCreator(unittest.TestCase):
     def setUp(self) -> None:
 
         # set up DBConnector instance
-        DBConnector().connect_psycopg(host="127.0.0.1", port=5432, username="postgres", password="postgres", dbname="postgres")
+        DBConnector().connect_psycopg(host="192.168.178.200", port=5432, username="postgres", password="postgres", dbname="postgres")
         self.inserter = DBInserter()
         self.creator = DBCreator()
         self.creator.build(obj=Table("test", Column(name="id", type="bigint"),
